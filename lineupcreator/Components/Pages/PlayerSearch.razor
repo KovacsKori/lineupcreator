@@ -1,0 +1,61 @@
+﻿@rendermode InteractiveServer
+@inject lineupcreator.Components.Services.FootballDbContext DbContext
+@inject DialogService DialogService
+@using lineupcreator.Components.Data
+@using Microsoft.EntityFrameworkCore
+
+    <style>
+        .search_photo{
+            width: 50px;
+
+        }
+
+        .search_flag {
+            width: 30px;
+        }
+    </style>
+    
+    <div class="rz-p-sm-12 rz-text-align-center">      
+        <RadzenLabel Text="Select Value" Component="DropDownFilteringLoadData" Style="margin-right: 8px; vertical-align: middle;" />
+        <RadzenDropDown AllowClear="true" @bind-Value=value
+                        LoadData=@LoadData AllowFiltering="true" Change="@SetPlayer"
+                        Data=@players TextProperty="short_name" Style="width: 130%; max-width: 400px;" Name="DropDownFilteringLoadData">
+            <Template Context="data">
+            <RadzenImage Path="@data.player_face_url" class="search_photo"></RadzenImage> @data.short_name @data.overall
+        </Template>
+        </RadzenDropDown>
+    </div>
+
+
+
+@code {
+    IEnumerable<Player> players;
+    public Player value;
+
+    void LoadData(LoadDataArgs args)
+    {
+
+        var query = DbContext.Players.AsQueryable().Where(p => !players.Contains(p));
+        query = (!string.IsNullOrEmpty(args.Filter))
+            ? query.Where(p => p.short_name.ToLower().Contains(args.Filter.ToLower()))
+            : query.Take(10);
+        players = query.ToList();
+
+        InvokeAsync(StateHasChanged);
+
+    }
+
+
+
+    void SetPlayer(object player)
+    {
+        lineupCreator.players[num] = (Player)player;    
+
+    }
+
+    [Parameter]
+    public LineupCreator lineupCreator { get; set; }
+
+    [Parameter]
+    public int num { get; set; }
+}

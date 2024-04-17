@@ -1,0 +1,148 @@
+﻿@page "/playerlist"
+@rendermode InteractiveServer
+@inject lineupcreator.Components.Services.FootballDbContext DbContext
+
+@using lineupcreator.Components.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Linq.Dynamic.Core
+
+<h3>Player List</h3>
+<div>
+
+    <RadzenDataFilter @ref="dataFilter" Auto=auto Data="@players" TItem="Player" ViewChanged=@(view => playersGrid.Reload())>
+        <Properties>
+            <RadzenDataFilterProperty TItem="Player" Property="short_name" Title="Name" />
+            <RadzenDataFilterProperty TItem="Player" Property="club_name" Title="Club Name" />          
+            <RadzenDataFilterProperty TItem="Player" Property="overall" Title="Overall" />
+            <RadzenDataFilterProperty TItem="Player" Property="player_positions" Title="Position" />
+            <RadzenDataFilterProperty TItem="Player" Property="nationality_name" Title="Nationality" />
+            <RadzenDataFilterProperty TItem="Player" Property="age" Title="Age" />
+        </Properties>
+    </RadzenDataFilter>
+
+    <RadzenDataGrid @ref="playersGrid" AllowColumnResize="false" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="@(filteredPlayers)" TItem="Player" ColumnWidth="300px" Count = "@count" LoadData="@LoadData" IsLoading="@isLoading" >
+        <Columns>
+            <RadzenDataGridColumn TItem="Player" Title="" Width="6px" Filterable="false">
+                <Template Context="data">
+                    <RadzenImage Path="@data.player_face_url" class="rz-gravatar" AlternateText="@(data.short_name)" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Player" Property="short_name" Title="Name" Width="15px" />
+            <RadzenDataGridColumn TItem="Player" Title="" Width="7px" Filterable="false">
+                <Template Context="data">
+                    <RadzenImage Path="@data.club_logo_url" class="rz-gravatar" AlternateText="@(data.club_name)" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Player" Property="club_name" Title="Club" Width="18px" />
+            <RadzenDataGridColumn TItem="Player" Title="" Width="6px" Filterable="false">
+                <Template Context="data">
+                    <RadzenImage Path="@data.nation_flag_url" AlternateText="@(data.club_name)" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Player" Property="nationality_name" Title="Nation" Width="15px" />
+            <RadzenDataGridColumn TItem="Player" Property="age" Title="Age" Width="10px" />
+            <RadzenDataGridColumn TItem="Player" Property="height_cm" Title="Height(cm)" Width="13px" />
+            <RadzenDataGridColumn TItem="Player" Property="player_positions" Title="POS" Width="10px" />
+            <RadzenDataGridColumn TItem="Player" Property="overall" Title="OVR" Width="10px" />
+            <RadzenDataGridColumn TItem="Player" Property="pace" Title="PAC" Width="10px" />
+            <RadzenDataGridColumn TItem="Player" Property="shooting" Title="SHO" Width="7px" />
+            <RadzenDataGridColumn TItem="Player" Property="passing" Title="PAS" Width="7px" />
+            <RadzenDataGridColumn TItem="Player" Property="dribbling" Title="DRI" Width="7px" />
+            <RadzenDataGridColumn TItem="Player" Property="defending" Title="DEF" Width="7px" />
+            <RadzenDataGridColumn TItem="Player" Property="physic" Title="PHY" Width="8px" />
+        </Columns>
+    </RadzenDataGrid>
+</div>
+@code {
+
+    
+
+  
+
+    bool auto = true;
+    RadzenDataFilter<Player> dataFilter;
+
+    IEnumerable<Player> filteredPlayers;
+    IEnumerable<Player> players;
+    RadzenDataGrid<Player> playersGrid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        players = Enumerable.Empty<Player>();
+    }
+
+    List<string> titles = new List<string> { "Sales Representative", "Vice President, Sales", "Sales Manager", "Inside Sales Coordinator" };
+    IEnumerable<string> selectedTitles;
+    IEnumerable<string> finalSelectedTitles;
+
+    async Task OnSelectedTitlesChange(object value)
+    {
+        if (selectedTitles != null && !selectedTitles.Any())
+        {
+            selectedTitles = null;
+        }
+
+        if (auto)
+        {
+            finalSelectedTitles = selectedTitles;
+        }
+
+        await playersGrid.FirstPage();
+    }
+
+    async Task ApplyFilter()
+    {
+        finalSelectedTitles = selectedTitles;
+        await dataFilter.Filter();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await dataFilter.AddFilter(new CompositeFilterDescriptor()
+                {
+                    Property = "club_name",
+                    FilterValue = "Manchester United",
+                    FilterOperator = FilterOperator.Contains
+                });
+        }
+    }
+
+    bool isLoading;
+    int count;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        await Task.Yield();
+
+        // This demo is using https://dynamic-linq.net
+        var query = DbContext.Players.AsQueryable();
+
+        // Filter via the Where method
+        query = query.Where(dataFilter);
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            // Sort via the OrderBy method
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        // Important!!! Make sure the Count property of RadzenDataGrid is set.
+        count = query.Count();
+
+        // Perform paging via Skip and Take.
+        filteredPlayers = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        isLoading = false;
+    }
+
+
+}

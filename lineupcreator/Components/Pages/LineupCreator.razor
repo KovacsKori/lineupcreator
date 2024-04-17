@@ -1,0 +1,1861 @@
+﻿@page "/lineupcreator"
+@rendermode InteractiveServer
+@inject lineupcreator.Components.Services.FootballDbContext DbContext
+@inject DialogService DialogService
+@using lineupcreator.Components.Data
+@using Microsoft.EntityFrameworkCore
+
+<RadzenDialog />
+
+<style>
+
+    .lineup-container {
+        margin-top: 5%;
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        float: left;
+    }
+
+    .lineup-row {
+        display: flex;
+        justify-content: space-between;
+        width: 110%;
+        margin-bottom: 110px;
+    }
+
+    .lineup-column {
+        text-align: center;
+        width: 40%;
+    }
+
+    .player-photo {
+        display: flex;
+        margin-top: -31%;
+        margin-left: 45%;
+        border-radius: 50%;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+    }
+
+    .player-photo2 {
+        display: block;
+        margin-top: -28%;
+        margin-left: 45%;
+        border-radius: 50%;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+    }
+
+    .player-photo3 {
+        display: block;
+        margin-top: -18%;
+        margin-left: 45%;
+        border-radius: 50%;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+    }
+
+    .row-middle {
+        display: flex;
+        justify-content: center;
+        width: 80%;
+        margin-bottom: 50px;
+    }
+
+    .first-row442 {
+        display: flex;
+        justify-content: space-between;
+        width: 65%;
+        margin-bottom: 80px;
+    }
+
+    .alert-container {
+        display: inline-block;
+        float: left;
+        margin-left: 50px;
+        margin-top: 5%;
+    }
+
+    .table-container {
+        display: inline-block;
+        float: right;
+        margin: 10px 70px 70px;
+        box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+    }
+
+    .fl-table {
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: normal;
+        border: none;
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 100%;
+        white-space: nowrap;
+        background-color: white;
+    }
+
+        .fl-table td, .fl-table th {
+            text-align: center;
+            padding: 8px;
+        }
+
+        .fl-table td {
+            border-right: 1px solid #f8f8f8;
+            font-size: 12px;
+        }
+
+        .fl-table thead th {
+            color: #ffffff;
+            background: #4FC3A1;
+        }
+
+
+            .fl-table thead th:nth-child(odd) {
+                color: #ffffff;
+                background: #324960;
+            }
+
+        .fl-table tr:nth-child(even) {
+            background: #F8F8F8;
+        }
+
+    @@media (max-width: 767px) {
+        .fl-table {
+            display: block;
+            width: 100%;
+        }
+
+        .table-container:before {
+            content: "Scroll horizontally >";
+            display: block;
+            text-align: right;
+            font-size: 11px;
+            color: white;
+            padding: 0 0 10px;
+        }
+
+        .fl-table thead, .fl-table tbody, .fl-table thead th {
+            display: block;
+        }
+
+            .fl-table thead th:last-child {
+                border-bottom: none;
+            }
+
+        .fl-table thead {
+            float: left;
+        }
+
+        .fl-table tbody {
+            width: auto;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .fl-table td, .fl-table th {
+            padding: 20px .625em .625em .625em;
+            height: 60px;
+            vertical-align: middle;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+            width: 120px;
+            font-size: 13px;
+            text-overflow: ellipsis;
+        }
+
+        .fl-table thead th {
+            text-align: left;
+            border-bottom: 1px solid #f7f7f9;
+        }
+
+        .fl-table tbody tr {
+            display: table-cell;
+        }
+
+            .fl-table tbody tr:nth-child(odd) {
+                background: none;
+            }
+
+        .fl-table tr:nth-child(even) {
+            background: transparent;
+        }
+
+        .fl-table tr td:nth-child(odd) {
+            background: #F8F8F8;
+            border-right: 1px solid #E6E4E4;
+        }
+
+        .fl-table tr td:nth-child(even) {
+            border-right: 1px solid #E6E4E4;
+        }
+
+        .fl-table tbody td {
+            display: block;
+            text-align: center;
+        }
+    }
+</style>
+
+<div>
+    <RadzenLabel Text="Formations:" Component="DropDownChangeEvent" Style="margin-right: 8px; vertical-align: middle;" />
+    <RadzenDropDown TValue="string" Value=@currentformation Data=@formations Change="@(args => currentformation = $"{args}")" Style="width: 100%; max-width: 400px;" Name="DropDownChangeEvent" />
+
+</div>
+
+@if (currentformation == "433")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--Alertek-->
+    <div class="alert-container">
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions[index]
+                </RadzenAlert>
+            }
+        }
+
+        <!--Kozéppálya-->
+        @if (players[3] != null && players[4] != null && players[5] != null)
+        {
+            float maxheight = 0;
+            float? maxpace = 0;
+            float? maxdef = 0;
+            float? avgpassing = (players[3]!.passing + players[4]!.passing + players[5]!.passing) / 3;
+            @for (int i = 3; i <= 5; i++)
+            {
+
+                @if (players[i]!.height_cm > maxheight)
+                {
+                    maxheight = players[i]!.height_cm;
+
+                }
+
+                @if (players[i].pace > maxpace)
+                {
+                    maxpace = players[i].pace;
+
+                }
+
+                @if (players[i].defending > maxdef)
+                {
+                    maxdef = players[i].defending;
+
+                }
+
+            }
+
+            @if (maxdef < 78)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is not secure defensively
+                </RadzenAlert>
+            }
+
+            @if (maxheight < 180)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    You don't have a tall player in midfield
+                </RadzenAlert>
+            }
+            @if (maxpace < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is pretty slow
+                </RadzenAlert>
+            }
+            @if (avgpassing < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really poor
+                </RadzenAlert>
+            }
+            else if (avgpassing > 83)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really good
+                </RadzenAlert>
+            }
+        }
+        @if (players[1] != null && players[1].shooting < 78)
+        {
+            <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                @players[1].short_name has low shooting
+            </RadzenAlert>
+        }
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                int nulla = 0;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "433(A)")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions433A[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+
+
+
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions433A[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions433A[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions433A[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions433A[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions433A[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions433A[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions433A[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions433A[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions433A[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions433A[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions433A[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions433A[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions433A[index]
+                </RadzenAlert>
+            }
+        }
+        <!--kozeppalya-->
+        @if (players[3] != null && players[4] != null && players[5] != null)
+        {
+            float maxheight = 0;
+            float? maxpace = 0;
+            float? maxdef = 0;
+            float? avgpassing = (players[3]!.passing + players[4]!.passing + players[5]!.passing) / 3;
+            @for (int i = 3; i <= 5; i++)
+            {
+
+                @if (players[i]!.height_cm > maxheight)
+                {
+                    maxheight = players[i]!.height_cm;
+
+                }
+
+                @if (players[i].pace > maxpace)
+                {
+                    maxpace = players[i].pace;
+
+                }
+
+                @if (players[i].defending > maxdef)
+                {
+                    maxdef = players[i].defending;
+
+                }
+
+            }
+
+            @if (maxdef < 78)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is not secure defensively
+                </RadzenAlert>
+            }
+
+            @if (maxheight < 180)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    You don't have a tall player in midfield
+                </RadzenAlert>
+            }
+            @if (maxpace < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is pretty slow
+                </RadzenAlert>
+            }
+            @if (avgpassing < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really poor
+                </RadzenAlert>
+            }
+            else if (avgpassing > 83)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really good
+                </RadzenAlert>
+            }
+        }
+
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions433A[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions433A[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "442")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions442[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions442[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions442[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions442[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions442[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions442[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions442[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions442[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions442[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions442[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions442[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions442[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions442[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions442[index]
+                </RadzenAlert>
+            }
+        }
+        <!--kozeppalya-->
+        @if (players[4] != null && players[5] != null)
+        {
+            float maxheight = 0;
+            float? maxpace = 0;
+            float? maxdef = 0;
+            float? avgpassing = (players[4]!.passing + players[5]!.passing) / 2;
+            @for (int i = 4; i <= 5; i++)
+            {
+
+                @if (players[i]!.height_cm > maxheight)
+                {
+                    maxheight = players[i]!.height_cm;
+
+                }
+
+                @if (players[i].pace > maxpace)
+                {
+                    maxpace = players[i].pace;
+
+                }
+
+                @if (players[i].defending > maxdef)
+                {
+                    maxdef = players[i].defending;
+
+                }
+
+            }
+
+            @if (maxdef < 78)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is not secure defensively
+                </RadzenAlert>
+            }
+
+            @if (maxheight < 180)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    You don't have a tall player in midfield
+                </RadzenAlert>
+            }
+            @if (maxpace < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield is pretty slow
+                </RadzenAlert>
+            }
+            @if (avgpassing < 75)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really poor
+                </RadzenAlert>
+            }
+            else if (avgpassing > 83)
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    Your midfield's passing is really good
+                </RadzenAlert>
+            }
+        }
+
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions442[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions442[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "352")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions352[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions352[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions352[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions352[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions352[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions352[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions352[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions352[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="lineup-row">
+
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions352[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions352[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions352[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions352[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions352[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions352[index]
+                </RadzenAlert>
+            }
+        }
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions352[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions352[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "4231")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions4231[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions4231[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="lineup-row ">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions4231[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions4231[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions4231[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions4231[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions4231[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions4231[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions4231[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions4231[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions4231[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions4231[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions4231[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions4231[index]
+                </RadzenAlert>
+            }
+        }
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions4231[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions4231[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "541")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions541[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions541[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="lineup-row ">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions541[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions541[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions541[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions541[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions541[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions541[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions541[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions541[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions541[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions541[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions541[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions541[index]
+                </RadzenAlert>
+            }
+        }
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions541[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions541[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+@if (currentformation == "41212")
+{
+    float sum = 0;
+    float overall;
+    float multiplier = 0.6f;
+    for (int i = 0; i <= 10; i++)
+    {
+
+        if (players[i] != null)
+        {
+            if (!players[i]!.player_positions.Contains(positions41212[i]))
+            {
+                sum += (players[i]!.overall * multiplier);
+            }
+            else
+            {
+                sum += players[i]!.overall;
+            }
+        }
+
+    }
+    overall = sum / 11;
+    <div>
+        Rating:
+        @Math.Round(overall)
+        ‎
+        ‎
+        ‎
+        Chemistry:
+        @GetTeamChemistry()
+    </div>
+    <!--lineup-->
+    <div class="lineup-container">
+
+        <div class="lineup-row  first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions41212[0])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[0] != null)
+                {
+                    <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions41212[1])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[1] != null)
+                {
+                    <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions41212[2])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[2] != null)
+                {
+                    <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="first-row442">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions41212[3])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[3] != null)
+                {
+                    <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions41212[4])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[4] != null)
+                {
+                    <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions41212[5])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[5] != null)
+                {
+                    <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions41212[6])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[6] != null)
+                {
+                    <RadzenImage Path="@players[6]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions41212[7])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[7] != null)
+                {
+                    <RadzenImage Path="@players[7]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions41212[8])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[8] != null)
+                {
+                    <RadzenImage Path="@players[8]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions41212[9])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[9] != null)
+                {
+                    <RadzenImage Path="@players[9]!.player_face_url" class="player-photo2"></RadzenImage>
+                }
+            </div>
+        </div>
+        <div class="lineup-row row-middle">
+            <div class="lineup-column position-container">
+                <RadzenButton Click=@(args => OpenSideDialog(10)) Text="@GetPlayerName(10, positions41212[10])" ButtonStyle="ButtonStyle.Primary" />
+                @if (players[10] != null)
+                {
+                    <RadzenImage Path="@players[10]!.player_face_url" class="player-photo3"></RadzenImage>
+                }
+            </div>
+        </div>
+    </div>
+    <!--alertek-->
+    <div class="alert-container">
+        <!--rossz pozi-->
+        @for (int i = 0; i <= positions.Length - 1; i++)
+        {
+            var index = i;
+            @if (players[index] != null && !(players[index]!.player_positions.Contains(positions41212[index])))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                    @players[index]!.short_name is not a @positions41212[index]
+                </RadzenAlert>
+            }
+        }
+    </div>
+    <!--table-->
+    <div class="table-container">
+
+
+        <table class="f1-table">
+
+            @for (int i = 0; i <= positions.Length - 1; i++)
+            {
+                var index = i;
+                if (players[index] != null)
+                {
+                    <tr>
+                        <td> @positions41212[index] </td>
+                        <td> @players[index]!.short_name </td>
+                        <td>
+                            @if (!players[index]!.player_positions.Contains(positions41212[index]))
+                            {
+                                @Math.Round(players[index]!.overall * multiplier)
+                            }
+                            else
+                            {
+                                @players[index]!.overall
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+    </div>
+}
+
+
+<button onclick="exportAsImage()">Export as Image</button>
+
+<script>
+    function exportAsImage() {
+        const container = document.querySelector('.lineup-container');
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+
+        // HTMLCanvasElement létrehozása
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        // Canvas tartalomának másolása
+        const context = canvas.getContext('2d');
+        context.fillRect(0, 0, width, height);
+        context.drawImage(container, 0, 0, width, height);
+
+        // Canvas képének letöltése
+        const link = document.createElement('a');
+        link.download = 'lineup.png';
+        link.href = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream");
+        link.click();
+    }
+</script>
+
+
+@code {
+
+    async Task OpenSideDialog(int num)
+    {
+        await DialogService.OpenSideAsync<PlayerSearch>("Side Panel", new Dictionary<string, object> { { "lineupCreator", this }, { "num", num } }, options: new SideDialogOptions { CloseDialogOnOverlayClick = true, Position = DialogPosition.Right, ShowMask = true });
+    }
+
+
+    string GetPlayerName(int num, string defaultname)
+    {
+        if (players[num] == null)
+        {
+            return defaultname;
+        }
+        return players[num]!.short_name;
+    }
+
+    string GetPlayerPhoto(int num)
+    {
+        if (players[num] == null)
+        {
+            return "";
+        }
+        return players[num]!.player_face_url;
+    }
+
+    float GetOverall()
+    {
+        float sum = 0;
+        float overall;
+        float multiplier = 0.6f;
+        for (int i = 0; i <= 10; i++)
+        {
+
+            if (players[i] != null)
+            {
+                if (!players[i]!.player_positions.Contains(positions[i]))
+                {
+                    sum += (players[i]!.overall * multiplier);
+                }
+                else
+                {
+                    sum += players[i]!.overall;
+                }
+            }
+
+        }
+        overall = sum / 11;
+        return overall;
+    }
+
+
+    int GetPlayerChemistry(Player player)
+    {
+        int playerchemistry = 0;
+        int count = 0;
+
+        for (int i = 0; i <= 10; i++)
+        {
+            if (player.sofifa_id != players[i]?.sofifa_id)
+            {
+                if ((player.nationality_id == players[i]?.nationality_id) && (player.club_team_id == players[i]?.club_team_id))
+                {
+                    count += 2;
+                }
+                else if ((player.nationality_id == players[i]?.nationality_id) || (player.club_team_id == players[i]?.club_team_id))
+                {
+                    count++;
+                }
+            }
+        }
+
+        if (1 <= count && count < 3)
+        {
+            playerchemistry = 1;
+        }
+        else if (3 <= count && count < 7)
+        {
+            playerchemistry = 2;
+        }
+        else if (7 <= count)
+        {
+            playerchemistry = 3;
+        }
+        count = 0;
+        return playerchemistry;
+    }
+
+    int GetTeamChemistry()
+    {
+        int teamchemistry = 0;
+        for (int i = 0; i <= 10; i++)
+        {
+            if (players[i] != null)
+            {
+                teamchemistry += GetPlayerChemistry(players[i]!);
+            }
+
+        }
+
+
+        return teamchemistry;
+    }
+
+
+    bool isComplete()
+    {
+        foreach (var player in players) if (player == null) return false;
+        return true;
+    }
+
+
+    [Parameter]
+    public Player?[] players { get; set; } = new Player?[positions.Length];
+
+    string currentformation = "433";
+
+    static string[] formations ={
+    "433",
+    "433(A)",
+    "442",
+    "4231",
+    "41212",
+    "352",
+    "541"
+    };
+
+    static string[] positions442 ={
+    "ST",
+    "ST",
+    "LM",
+    "CM",
+    "CM",
+    "RM",
+    "LB",
+    "CB",
+    "CB",
+    "RB",
+    "GK"
+    };
+
+    static string[] positions ={
+    "LW",
+    "ST",
+    "RW",
+    "CM",
+    "CM",
+    "CM",
+    "LB",
+    "CB",
+    "CB",
+    "RB",
+    "GK"
+    };
+
+    static string[] positions433A ={
+    "LW",
+    "ST",
+    "RW",
+    "CM",
+    "CAM",
+    "CM",
+    "LB",
+    "CB",
+    "CB",
+    "RB",
+    "GK"
+    };
+
+    static string[] positions352 ={
+    "ST",
+    "ST",
+    "CAM",
+    "LM",
+    "CDM",
+    "CDM",
+    "RM",
+    "CB",
+    "CB",
+    "CB",
+    "GK"
+    };
+
+    static string[] positions4231 ={
+    "ST",
+    "LM",
+    "CAM",
+    "RM",
+    "CDM",
+    "CDM",
+    "LB",
+    "CB",
+    "CB",
+    "RB",
+    "GK"
+    };
+
+    static string[] positions541 ={
+    "ST",
+    "LM",
+    "CM",
+    "CM",
+    "RM",
+    "LWB",
+    "CB",
+    "CB",
+    "CB",
+    "RWB",
+    "GK"
+    };
+
+    static string[] positions41212 ={
+    "ST",
+    "ST",
+    "CAM",
+    "CM",
+    "CM",
+    "CDM",
+    "LB",
+    "CB",
+    "CB",
+    "RB",
+    "GK"
+    };
+}
+
