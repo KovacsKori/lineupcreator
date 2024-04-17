@@ -14,6 +14,9 @@ namespace lineupcreator.Components.Data
         [Column("short_name")]
         public string short_name { get; set; }
 
+        [Column("long_name")]
+        public string long_name { get; set; }
+
         [Column("overall")]
         public float overall { get; set; }
 

@@ -6,17 +6,31 @@
 @using Microsoft.EntityFrameworkCore
 @using System.Linq.Dynamic.Core
 
+
+
 <h3>Player List</h3>
 <div>
 
     <RadzenDataFilter @ref="dataFilter" Auto=auto Data="@players" TItem="Player" ViewChanged=@(view => playersGrid.Reload())>
         <Properties>
             <RadzenDataFilterProperty TItem="Player" Property="short_name" Title="Name" />
-            <RadzenDataFilterProperty TItem="Player" Property="club_name" Title="Club Name" />          
+            <RadzenDataFilterProperty TItem="Player" Property="club_name" Title="Club" />          
             <RadzenDataFilterProperty TItem="Player" Property="overall" Title="Overall" />
-            <RadzenDataFilterProperty TItem="Player" Property="player_positions" Title="Position" />
+            <RadzenDataFilterProperty TItem="Player" Property="player_positions" Title="Positions" />
             <RadzenDataFilterProperty TItem="Player" Property="nationality_name" Title="Nationality" />
+            <RadzenDataFilterProperty TItem="Player" Property="league_name" Title="League" />
+            <RadzenDataFilterProperty TItem="Player" Property="height_cm" Title="Height" />
             <RadzenDataFilterProperty TItem="Player" Property="age" Title="Age" />
+            <RadzenDataFilterProperty TItem="Player" Property="pace" Title="Pace" />
+            <RadzenDataFilterProperty TItem="Player" Property="shooting" Title="Shooting"/>
+            <RadzenDataFilterProperty TItem="Player" Property="passing" Title="Passing" />
+            <RadzenDataFilterProperty TItem="Player" Property="dribbling" Title="Dribbling" />
+            <RadzenDataFilterProperty TItem="Player" Property="defending" Title="Defending" />
+            <RadzenDataFilterProperty TItem="Player" Property="physic" Title="Physicality" />
+            <RadzenDataFilterProperty TItem="Player" Property="weak_foot" Title="Weak Foot" />
+            <RadzenDataFilterProperty TItem="Player" Property="skill_moves" Title="Skill Moves" />
+            <RadzenDataFilterProperty TItem="Player" Property="preferred_foot" Title="Preferred Foot" />
+            <RadzenDataFilterProperty TItem="Player" Property="nationality_name" Title="Nationality" />
         </Properties>
     </RadzenDataFilter>
 
@@ -74,31 +88,6 @@
         players = Enumerable.Empty<Player>();
     }
 
-    List<string> titles = new List<string> { "Sales Representative", "Vice President, Sales", "Sales Manager", "Inside Sales Coordinator" };
-    IEnumerable<string> selectedTitles;
-    IEnumerable<string> finalSelectedTitles;
-
-    async Task OnSelectedTitlesChange(object value)
-    {
-        if (selectedTitles != null && !selectedTitles.Any())
-        {
-            selectedTitles = null;
-        }
-
-        if (auto)
-        {
-            finalSelectedTitles = selectedTitles;
-        }
-
-        await playersGrid.FirstPage();
-    }
-
-    async Task ApplyFilter()
-    {
-        finalSelectedTitles = selectedTitles;
-        await dataFilter.Filter();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -107,8 +96,8 @@
         {
             await dataFilter.AddFilter(new CompositeFilterDescriptor()
                 {
-                    Property = "club_name",
-                    FilterValue = "Manchester United",
+                    Property = "nationality_name",
+                    FilterValue = "Hungary",
                     FilterOperator = FilterOperator.Contains
                 });
         }

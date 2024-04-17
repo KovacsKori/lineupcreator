@@ -37,7 +37,7 @@
 
         var query = DbContext.Players.AsQueryable().Where(p => !players.Contains(p));
         query = (!string.IsNullOrEmpty(args.Filter))
-            ? query.Where(p => p.short_name.ToLower().Contains(args.Filter.ToLower()))
+            ? query.Where(p => p.long_name.ToLower().Contains(args.Filter.ToLower()))
             : query.Take(10);
         players = query.ToList();
 
