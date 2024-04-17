@@ -34,6 +34,7 @@
         </Properties>
     </RadzenDataFilter>
 
+
     <RadzenDataGrid @ref="playersGrid" AllowColumnResize="false" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="@(filteredPlayers)" TItem="Player" ColumnWidth="300px" Count = "@count" LoadData="@LoadData" IsLoading="@isLoading" >
         <Columns>
