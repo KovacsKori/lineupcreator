@@ -23,12 +23,12 @@
         display: flex;
         justify-content: space-between;
         width: 110%;
-        margin-bottom: 110px;
+        margin-bottom: 110px;       
     }
 
     .lineup-column {
         text-align: center;
-        width: 40%;
+        width: 40%;     
     }
 
     .player-photo {
@@ -59,7 +59,7 @@
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
         width: 50px;
         height: 50px;
-    }
+        }
 
     .row-middle {
         display: flex;
@@ -244,7 +244,7 @@
     <!--lineup-->
     <div class="lineup-container">
         <div class="lineup-row">
-            <div class="lineup-column position-container">
+            <div class="lineup-column position-container">                                
                 <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions[0])" ButtonStyle="ButtonStyle.Primary" />
                 @if (players[0] != null)
                 {
@@ -663,9 +663,11 @@
 
         <table class="f1-table">
 
+
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -679,6 +681,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions433A[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -896,6 +908,7 @@
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -909,6 +922,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions442[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -1069,6 +1092,7 @@
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -1082,6 +1106,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions352[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -1239,6 +1273,7 @@
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -1252,6 +1287,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions4231[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -1407,6 +1452,7 @@
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -1420,6 +1466,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions541[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -1581,6 +1637,7 @@
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
+                int nulla = 0;
                 if (players[index] != null)
                 {
                     <tr>
@@ -1594,6 +1651,16 @@
                             else
                             {
                                 @players[index]!.overall
+                            }
+                        </td>
+                        <td>
+                            @if (players[index]!.player_positions.Contains(positions41212[index]))
+                            {
+                                @GetPlayerChemistry(players[index]!)
+                            }
+                            else
+                            {
+                                @nulla
                             }
                         </td>
                     </tr>
@@ -1856,6 +1923,6 @@
     "CB",
     "RB",
     "GK"
-    };
+    };   
 }
 
