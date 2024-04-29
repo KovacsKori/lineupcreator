@@ -42,7 +42,7 @@ namespace lineupcreator.Components.Data
         public float? club_jersey_number { get; set; }
 
         [Column("nationality_id")]
-        public float nationality_id { get; set; }
+        public float? nationality_id { get; set; }
 
         [Column("nationality_name")]
         public string nationality_name { get; set; }
@@ -80,50 +80,50 @@ namespace lineupcreator.Components.Data
         [Column("physic")]
         public float? physic { get; set; }
 
-       /* [Column("st")]
-        public string st { get; set; }
+        /* [Column("st")]
+         public string st { get; set; }
 
-        [Column("lw")]
-        public float lw { get; set; }
-       
-        [Column("cf")]
-        public float cf { get; set; }
+         [Column("lw")]
+         public float lw { get; set; }
 
-        [Column("rw")]
-        public float rw { get; set; }
+         [Column("cf")]
+         public float cf { get; set; }
 
-        [Column("cam")]
-        public string cam { get; set; }
+         [Column("rw")]
+         public float rw { get; set; }
 
-       [Column("lm")]
-        public string lm { get; set; }
+         [Column("cam")]
+         public string cam { get; set; }
 
-        [Column("cm")]
-        public string cm { get; set; }
+        [Column("lm")]
+         public string lm { get; set; }
 
-        [Column("rm")]
-        public string rm { get; set; }
+         [Column("cm")]
+         public string cm { get; set; }
 
-        [Column("cdm")]
-        public string cdm { get; set; }
+         [Column("rm")]
+         public string rm { get; set; }
 
-        [Column("lwb")]
-        public string lwb { get; set; }
+         [Column("cdm")]
+         public string cdm { get; set; }
 
-        [Column("lb")]
-        public string lb { get; set; }
+         [Column("lwb")]
+         public string lwb { get; set; }
 
-        [Column("cb")]
-        public string cb { get; set; }
+         [Column("lb")]
+         public string lb { get; set; }
 
-        [Column("rb")]
-        public string rb { get; set; }
+         [Column("cb")]
+         public string cb { get; set; }
 
-        [Column("rwb")]
-        public string rwb { get; set; }
+         [Column("rb")]
+         public string rb { get; set; }
 
-        [Column("gk")]
-        public string gk { get; set; }*/
+         [Column("rwb")]
+         public string rwb { get; set; }
+
+         [Column("gk")]
+         public string gk { get; set; }*/
 
         [Column("player_face_url")]
         public string player_face_url { get; set; }
@@ -132,8 +132,8 @@ namespace lineupcreator.Components.Data
         public string? club_logo_url { get; set; }
 
         [Column("nation_flag_url")]
-        public string nation_flag_url { get; set; }       
-        
+        public string nation_flag_url { get; set; }
+
     }
 
 }

@@ -18,6 +18,8 @@ builder.Services.AddScoped<FootballDbContext>();
 
 builder.Services.AddScoped<DialogService>();
 
+builder.Services.AddScoped<RandomPlayerService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

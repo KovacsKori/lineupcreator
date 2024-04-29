@@ -1,0 +1,152 @@
+﻿@page "/guesser"
+@rendermode InteractiveServer
+@inject RandomPlayerService playerService
+
+<div class="player-container">
+    @if (currentPlayer != null)
+    {
+        <div class="search-container">
+            <input type="text" @bind="guess" @oninput="SearchPlayers" placeholder="Enter your guess">
+            <div class="dropdown-content">
+                @foreach (var player in filteredPlayers)
+                {
+                    <div @onclick="() => SelectPlayer(player)">@player.short_name</div>
+                }
+            </div>
+        </div>
+
+        <button @onclick="() => CheckGuess(currentPlayer)">Check Guess</button>
+        <p>@guessResult</p>
+    }
+    else
+    {
+        <p>No player available</p>
+    }
+    <div>
+        @currentPlayer.short_name, @currentPlayer.player_positions
+    </div>
+    <div>
+        <h4>Previous Guesses:</h4>
+        @foreach (var guess in guessedPlayers)
+        {
+            <ul>
+                <li><strong>Guess:</strong> @guess.GuessedName</li>
+                <li><strong>Result:</strong> @guess.Result</li>
+                @if (guess.GuessedPlayerObject != null)
+                {
+                    <li><strong>Position:</strong> @guess.GuessedPlayerObject.player_positions , @ComparePositions(guess.GuessedPlayerObject.player_positions,currentPlayer.player_positions)</li>
+                    <li><strong>Nationality:</strong> @guess.GuessedPlayerObject.nationality_name, @Compare(guess.GuessedPlayerObject.nationality_id,currentPlayer.nationality_id)</li>
+                    <li><strong>Club:</strong> @guess.GuessedPlayerObject.club_name, @Compare(guess.GuessedPlayerObject.club_team_id,currentPlayer.club_team_id)</li>
+                    <li><strong>League</strong>@guess.GuessedPlayerObject.league_name, @CompareLeague(guess.GuessedPlayerObject.league_name!,currentPlayer.league_name!) </li>
+                    <li><strong>Overall:</strong> @guess.GuessedPlayerObject.overall, @Compare(guess.GuessedPlayerObject.overall,currentPlayer.overall)</li>
+                    <li><strong>Age:</strong> @guess.GuessedPlayerObject.age, @Compare(guess.GuessedPlayerObject.age,currentPlayer.age)</li>
+
+                }
+                
+            </ul>
+        }
+    </div>
+
+    <button @onclick="FetchRandomPlayer">Get Another Random Player</button>
+</div>
+
+@code {
+    private Player currentPlayer;
+    private string guess = "";
+    private string guessResult = "";
+    private int guessCounter;
+    private List<Player> filteredPlayers = new List<Player>();
+
+    // Define a class to store the guessed player along with the guess result
+    private class GuessedPlayer
+    {
+        public string GuessedName { get; set; }
+        public Player GuessedPlayerObject { get; set; }
+        public string Result { get; set; }
+    }
+
+    // List to store the guess results
+    private List<GuessedPlayer> guessedPlayers = new List<GuessedPlayer>();
+
+    protected override void OnInitialized()
+    {
+        FetchRandomPlayer(); // Fetch a random player when the component initializes
+    }
+
+    private void FetchRandomPlayer()
+    {
+        currentPlayer = playerService.GetRandomPlayer();
+        guessedPlayers.Clear();
+    }
+
+    private void CheckGuess(Player selectedPlayer)
+    {
+        if (currentPlayer != null && selectedPlayer != null)
+        {
+            string result;
+            if (guess.Trim().Equals(currentPlayer.short_name, StringComparison.OrdinalIgnoreCase))
+            {
+                result = "Correct guess!";
+            }
+            else
+            {
+                result = "Incorrect guess. Try again.";
+            }
+
+            // Add the guessed player along with the guess result to the list
+            guessedPlayers.Add(new GuessedPlayer { GuessedName = guess, GuessedPlayerObject = selectedPlayer, Result = result });
+        }
+    }
+
+    private void SearchPlayers(ChangeEventArgs e)
+    {
+        string searchText = e.Value.ToString().ToLower();
+        filteredPlayers = playerService.SearchPlayers(searchText);
+    }
+
+    private void SelectPlayer(Player player)
+    {
+        guess = player.short_name;
+        CheckGuess(player); // Pass the selected player object to the CheckGuess method
+    }
+
+    private string ComparePositions(string guessedPlayerPositions, string currentPlayerPositions)
+    {
+        // Prepare the position strings: split and trim spaces
+        var splitGuessedPositions = guessedPlayerPositions.Split(',').Select(p => p.Trim()).ToList();
+        var splitCurrentPositions = currentPlayerPositions.Split(',').Select(p => p.Trim()).ToList();
+
+        // Determine if there is an exact match
+        bool exactMatch = splitGuessedPositions.Count == splitCurrentPositions.Count &&
+                          splitGuessedPositions.All(splitCurrentPositions.Contains);
+
+        // Determine if there is at least one matching position
+        bool partialMatch = splitGuessedPositions.Any(gp => splitCurrentPositions.Contains(gp));
+
+        // Return the result based on the matches found
+        if (exactMatch)
+            return "Matches exactly";
+        else if (partialMatch)
+            return "Partially matches";
+        else
+            return "Does not match";
+    }
+
+    private string Compare(float? n, float? m)
+    {
+        if (n==m)
+        {
+            return "Matches";
+        }
+        return "Does not match";
+    }
+
+    private string CompareLeague(string a, string b)
+    {
+        if (a==b)
+        {
+            return "Matches";
+        }
+        return "Does not match";
+    }
+}

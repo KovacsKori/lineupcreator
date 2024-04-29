@@ -8,6 +8,9 @@
 <RadzenDialog />
 
 <style>
+    body {
+        background-color: @backgroudColor;
+    }
 
     .lineup-container {
         width: 50%;
@@ -16,7 +19,7 @@
         align-items: center;
         padding: 5%;
         float: left;
-        background-image: url('pitch3.jpg');
+        background-image: url('@backgroundImageUrl');
         background-size: 100% 100%;
         font-family: 'Comic Sans MS';
         color: white;
@@ -30,30 +33,30 @@
         margin-bottom: 45px;
     }
 
-    .gk-row{
-        position:absolute;
-        bottom:13%;
+    .gk-row {
+        position: absolute;
+        bottom: 13%;
     }
 
-    .def-row{
-        position:absolute;
-        bottom:25%;
-        width:35%;
-        display:flex;
+    .def-row {
+        position: absolute;
+        bottom: 25%;
+        width: 35%;
+        display: flex;
         justify-content: space-between;
-        align-items:flex-end;
+        align-items: flex-end;
     }
 
-    .mid-row{
+    .mid-row {
         position: absolute;
         bottom: 45%;
         width: 25%;
         display: flex;
         justify-content: space-between;
-        align-items:flex-end;
+        align-items: flex-end;
     }
 
-    .cam-row{
+    .cam-row {
         position: absolute;
         bottom: 50%;
         width: 25%;
@@ -62,9 +65,9 @@
         align-items: flex-end;
     }
 
-    .att-row{
+    .att-row {
         position: absolute;
-        bottom:65%;
+        bottom: 65%;
         width: 35%;
         display: flex;
         justify-content: space-between;
@@ -80,25 +83,25 @@
         align-items: flex-end;
     }
 
-    .mid-row442{
+    .mid-row442 {
         position: absolute;
         bottom: 45%;
         width: 35%;
         display: flex;
         justify-content: space-between;
-        align-items:flex-end;
+        align-items: flex-end;
     }
 
-    .cdm-row{
+    .cdm-row {
         position: absolute;
         bottom: 35%;
         width: 20%;
         display: flex;
         justify-content: space-between;
-        align-items:flex-end;
+        align-items: flex-end;
     }
 
-    .mid-row4231{
+    .mid-row4231 {
         position: absolute;
         bottom: 52%;
         width: 35%;
@@ -107,7 +110,7 @@
         align-items: flex-end;
     }
 
-    .cam-row41212{
+    .cam-row41212 {
         position: absolute;
         bottom: 55%;
         width: 25%;
@@ -116,7 +119,7 @@
         align-items: flex-end;
     }
 
-    .def-row352{
+    .def-row352 {
         position: absolute;
         bottom: 25%;
         width: 20%;
@@ -125,11 +128,11 @@
         align-items: flex-end;
     }
     /*.lineup-column {
-                    align-items:center;
-                    text-align: center;
-                    width: 40%;
-                    border:solid magenta;
-                }*/
+                        align-items:center;
+                        text-align: center;
+                        width: 40%;
+                        border:solid magenta;
+                    }*/
 
     .player-photo {
         display: block;
@@ -158,7 +161,7 @@
         float: left;
         margin-left: 100px;
         margin-top: 5%;
-        background-color: #549E34;
+        background-color: @alertColor;
         border-radius: 20%;
         height: 600px;
         width: 300px;
@@ -315,6 +318,40 @@
         color: white;
     }
 
+    .redbutton {
+        background-color: initial;
+        background-image: linear-gradient(-180deg,#E10109,#74232A);
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;-
+        font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+        height: 40px;
+        line-height: 5px;
+        outline: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        pointer-events: auto;
+        position: relative;
+        text-align: center;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: top;
+        white-space: nowrap;
+        z-index: 9;
+        border: 0;
+    }
+
+        .redbutton:hover {
+            background: #E10109;
+        }
+    .colorbuttons{
+       position:absolute;
+       bottom:5px;
+       left:280px;
+    }
 </style>
 
 <div class="formations">
@@ -622,7 +659,7 @@
                 {
                     <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions433A[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions433A[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
 
             </div>
             <div>
@@ -630,7 +667,7 @@
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions433A[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions433A[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
 
             </div>
             <div>
@@ -638,7 +675,7 @@
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions433A[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions433A[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="cam-row row-middle">
@@ -647,7 +684,7 @@
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions433A[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions433A[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="mid-row">
@@ -656,14 +693,14 @@
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions433A[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions433A[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[5] != null)
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions433A[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions433A[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="def-row">
@@ -672,7 +709,7 @@
                 {
                     <RadzenImage Path="@players[6]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions433A[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions433A[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[7] != null)
@@ -686,14 +723,14 @@
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions433A[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions433A[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions433A[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions433A[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="gk-row row-middle">
@@ -875,7 +912,7 @@
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions442[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions442[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="mid-row442">
@@ -884,28 +921,28 @@
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions442[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions442[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[3] != null)
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions442[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions442[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[4] != null)
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions442[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions442[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[5] != null)
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions442[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions442[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="def-row">
@@ -914,28 +951,28 @@
                 {
                     <RadzenImage Path="@players[6]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions442[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions442[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[7] != null)
                 {
                     <RadzenImage Path="@players[7]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions442[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions442[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[8] != null)
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions442[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions442[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions442[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions442[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="gk-row row-middle">
@@ -1109,14 +1146,14 @@
                 {
                     <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions352[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions352[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[1] != null)
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions352[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions352[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="cam-row41212 row-middle">
@@ -1125,7 +1162,7 @@
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions352[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions352[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
 
         </div>
@@ -1135,21 +1172,21 @@
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions352[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions352[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[4] != null)
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions352[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions352[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[5] != null)
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions352[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions352[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[6] != null)
@@ -1167,21 +1204,21 @@
                 {
                     <RadzenImage Path="@players[7]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions352[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions352[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[8] != null)
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions352[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions352[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions352[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions352[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
 
             </div>
         </div>
@@ -1293,7 +1330,7 @@
                 {
                     <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions4231[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions4231[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
 
         </div>
@@ -1303,21 +1340,21 @@
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions4231[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions4231[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[2] != null)
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions4231[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions4231[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[3] != null)
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions4231[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions4231[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="cdm-row">
@@ -1326,14 +1363,14 @@
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions4231[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions4231[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[5] != null)
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions4231[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions4231[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="def-row">
@@ -1342,28 +1379,28 @@
                 {
                     <RadzenImage Path="@players[6]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions4231[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions4231[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[7] != null)
                 {
                     <RadzenImage Path="@players[7]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions4231[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions4231[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[8] != null)
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions4231[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions4231[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions4231[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions4231[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="gk-row row-middle">
@@ -1474,7 +1511,7 @@
                 {
                     <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions541[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions541[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
 
         </div>
@@ -1484,28 +1521,28 @@
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions541[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions541[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[2] != null)
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions541[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions541[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[3] != null)
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions541[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions541[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[4] != null)
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions541[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions541[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="def-row">
@@ -1514,35 +1551,35 @@
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions541[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions541[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[6] != null)
                 {
                     <RadzenImage Path="@players[6]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions541[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions541[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[7] != null)
                 {
                     <RadzenImage Path="@players[7]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions541[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions541[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[8] != null)
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions541[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions541[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions541[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions541[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="gk-row row-middle">
@@ -1653,14 +1690,14 @@
                 {
                     <RadzenImage Path="@players[0]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions41212[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(0)) Text="@GetPlayerName(0, positions41212[0])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[1] != null)
                 {
                     <RadzenImage Path="@players[1]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions41212[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(1)) Text="@GetPlayerName(1, positions41212[1])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="cam-row row-middle">
@@ -1670,7 +1707,7 @@
                 {
                     <RadzenImage Path="@players[2]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions41212[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(2)) Text="@GetPlayerName(2, positions41212[2])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
 
         </div>
@@ -1680,14 +1717,14 @@
                 {
                     <RadzenImage Path="@players[3]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions41212[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(3)) Text="@GetPlayerName(3, positions41212[3])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[4] != null)
                 {
                     <RadzenImage Path="@players[4]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions41212[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(4)) Text="@GetPlayerName(4, positions41212[4])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
 
         </div>
@@ -1697,7 +1734,7 @@
                 {
                     <RadzenImage Path="@players[5]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions41212[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(5)) Text="@GetPlayerName(5, positions41212[5])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="def-row">
@@ -1706,28 +1743,28 @@
                 {
                     <RadzenImage Path="@players[6]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions41212[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(6)) Text="@GetPlayerName(6, positions41212[6])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[7] != null)
                 {
                     <RadzenImage Path="@players[7]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions41212[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(7)) Text="@GetPlayerName(7, positions41212[7])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[8] != null)
                 {
                     <RadzenImage Path="@players[8]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions41212[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(8)) Text="@GetPlayerName(8, positions41212[8])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
             <div>
                 @if (players[9] != null)
                 {
                     <RadzenImage Path="@players[9]!.player_face_url" class="player-photo"></RadzenImage>
                 }
-                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions41212[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small"/>
+                <RadzenButton Click=@(args => OpenSideDialog(9)) Text="@GetPlayerName(9, positions41212[9])" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" />
             </div>
         </div>
         <div class="gk-row row-middle">
@@ -1798,8 +1835,12 @@
     </div>
 }
 
+<div class="colorbuttons">
+    <button class="redbutton" onclick="@ChangeBackgroundToRed"></button>
+</div>
 
-<button onclick="exportAsImage()">Export as Image</button>
+
+<!--<button onclick="exportAsImage()">Export as Image</button>-->
 
 <script>
     function exportAsImage() {
@@ -1935,6 +1976,18 @@
     {
         foreach (var player in players) if (player == null) return false;
         return true;
+    }
+
+    string backgroundImageUrl = "pitch3.jpg";
+    string backgroudColor = "#3E7426";
+    string alertColor = "#549E34";
+
+    void ChangeBackgroundToRed()
+    {
+        Console.WriteLine("szia");
+        backgroundImageUrl = "redpitch.jpg";
+        backgroudColor = "#74232A";
+        alertColor = "#BD3944";
     }
 
 
