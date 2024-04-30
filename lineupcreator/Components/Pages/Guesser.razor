@@ -2,60 +2,154 @@
 @rendermode InteractiveServer
 @inject RandomPlayerService playerService
 
-<div class="player-container">
+
+<style>
+
+    body{
+        font-family: 'Comic Sans MS';
+        font-size: 25px;
+    }
+
+    li {
+        display: block;
+        float: left;
+        width: 130px;
+        height: 130px;
+        padding:10px 0;
+        text-align: center;
+        background-color: grey;
+        border:solid 1px black;
+    }
+
+    ul {
+        float: right;
+        width:100%;
+
+    }
+
+    .guess-container {
+        width:70%;
+        float:right;
+
+        font-size:18px;
+    }
+
+    .search-container{
+        display:inline-block;
+        float:left;
+        width:300px;
+    }
+
+    .dropdown-content{
+        background-color:white;
+        border:solid 1px black;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    }
+
+    .searched-players{
+        border:solid 1px black;
+    }
+
+    .searched-players:hover{
+            background-color: #69F06E;
+    }
+
+    input{
+        width:300px;
+        font-size:25px;
+    }
+
+    .logo{
+        width:40px;
+        height 40px;
+    }
+
+    .glowing-button{
+        box-shadow:0px 0px 5px cyan,
+        0px 0px 25px cyan, 
+        0px 0px 50px cyan, 
+        0px 0px 100px cyan;
+    }
+
+</style>
+
+<div class="guess-container">
+    @foreach (var guess in guessedPlayers)
+    {
+        <ul>
+            <li style="background-color: @(guess.Result == "Correct guess!" ? "green" : "grey")">
+                @guess.GuessedName
+            </li>
+            @if (guess.GuessedPlayerObject != null)
+            {   
+                <li style="background-color: @(ComparePositions(guess.GuessedPlayerObject.player_positions, currentPlayer.player_positions) == "Matches exactly" ? "green" : (ComparePositions(guess.GuessedPlayerObject.player_positions, currentPlayer.player_positions) == "Partially matches" ? "orange" : "grey"))">
+                    @guess.GuessedPlayerObject.player_positions
+                </li>
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.nationality_name, currentPlayer.nationality_name) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.nationality_name
+                </li>
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.club_name!, currentPlayer.club_name!) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.club_name
+                </li>
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.league_name!, currentPlayer.league_name!) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.league_name
+                </li>
+                <li style="background-color: @(CompareHigherLower(guess.GuessedPlayerObject.overall, currentPlayer.overall) == "Matches" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.overall @if (CompareHigherLower(guess.GuessedPlayerObject.overall, currentPlayer.overall) != "Matches"){@CompareHigherLower(guess.GuessedPlayerObject.overall, currentPlayer.overall)}
+                </li>
+                <li style="background-color: @(CompareHigherLower(guess.GuessedPlayerObject.age, currentPlayer.age) == "Matches" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.age @if (CompareHigherLower(guess.GuessedPlayerObject.age, currentPlayer.age) != "Matches"){@CompareHigherLower(guess.GuessedPlayerObject.age, currentPlayer.age)}
+                </li>
+            }
+        </ul>
+    }
+</div>
+<div class="search-container">
+    <div style="@(IsDivClickable ? "pointer-events: auto;" : "pointer-events: none;")">
     @if (currentPlayer != null)
     {
-        <div class="search-container">
+        <div>
             <input type="text" @bind="guess" @oninput="SearchPlayers" placeholder="Enter your guess">
             <div class="dropdown-content">
                 @foreach (var player in filteredPlayers)
                 {
-                    <div @onclick="() => SelectPlayer(player)">@player.short_name</div>
+                    <div class="searched-players" @onclick="() => SelectPlayer(player)">@player.short_name <img class="logo "src="@player.club_logo_url"></div>
                 }
             </div>
         </div>
-
-        <button @onclick="() => CheckGuess(currentPlayer)">Check Guess</button>
-        <p>@guessResult</p>
     }
     else
     {
         <p>No player available</p>
     }
-    <div>
-        @currentPlayer.short_name, @currentPlayer.player_positions
     </div>
-    <div>
-        <h4>Previous Guesses:</h4>
-        @foreach (var guess in guessedPlayers)
-        {
-            <ul>
-                <li><strong>Guess:</strong> @guess.GuessedName</li>
-                <li><strong>Result:</strong> @guess.Result</li>
-                @if (guess.GuessedPlayerObject != null)
-                {
-                    <li><strong>Position:</strong> @guess.GuessedPlayerObject.player_positions , @ComparePositions(guess.GuessedPlayerObject.player_positions,currentPlayer.player_positions)</li>
-                    <li><strong>Nationality:</strong> @guess.GuessedPlayerObject.nationality_name, @Compare(guess.GuessedPlayerObject.nationality_id,currentPlayer.nationality_id)</li>
-                    <li><strong>Club:</strong> @guess.GuessedPlayerObject.club_name, @Compare(guess.GuessedPlayerObject.club_team_id,currentPlayer.club_team_id)</li>
-                    <li><strong>League</strong>@guess.GuessedPlayerObject.league_name, @CompareLeague(guess.GuessedPlayerObject.league_name!,currentPlayer.league_name!) </li>
-                    <li><strong>Overall:</strong> @guess.GuessedPlayerObject.overall, @Compare(guess.GuessedPlayerObject.overall,currentPlayer.overall)</li>
-                    <li><strong>Age:</strong> @guess.GuessedPlayerObject.age, @Compare(guess.GuessedPlayerObject.age,currentPlayer.age)</li>
+    @if (IsDivClickable==false)
+    {
+        <button class="glowing-button" @onclick="FetchRandomPlayer">Get Another Random Player</button>
+    }
+    else
+    {
+        <button @onclick="FetchRandomPlayer">Get Another Random Player</button>
+    }
 
-                }
-                
-            </ul>
-        }
-    </div>
-
-    <button @onclick="FetchRandomPlayer">Get Another Random Player</button>
+    Win: @win
+    Lose: @lose
+    Streak: @streak   
 </div>
+
 
 @code {
     private Player currentPlayer;
     private string guess = "";
     private string guessResult = "";
-    private int guessCounter;
+    private int guessCounter=0;
+    private int win=0;
+    private int lose = 0;
+    private int streak = 0;
+    private bool IsDivClickable = true;
     private List<Player> filteredPlayers = new List<Player>();
+
+
 
     // Define a class to store the guessed player along with the guess result
     private class GuessedPlayer
@@ -77,7 +171,10 @@
     {
         currentPlayer = playerService.GetRandomPlayer();
         guessedPlayers.Clear();
+        IsDivClickable = true;
+        guessCounter=0;
     }
+
 
     private void CheckGuess(Player selectedPlayer)
     {
@@ -87,10 +184,21 @@
             if (guess.Trim().Equals(currentPlayer.short_name, StringComparison.OrdinalIgnoreCase))
             {
                 result = "Correct guess!";
+                IsDivClickable = false;
+                guessCounter = 0;
+                win++;
+                streak++;
             }
             else
             {
                 result = "Incorrect guess. Try again.";
+                guessCounter++;
+                if (guessCounter==6)
+                {
+                    IsDivClickable = false;
+                    lose++;
+                    streak=0;
+                }
             }
 
             // Add the guessed player along with the guess result to the list
@@ -132,21 +240,31 @@
             return "Does not match";
     }
 
-    private string Compare(float? n, float? m)
+    private string CompareHigherLower(float? n, float? m)
     {
-        if (n==m)
+        if (n > m)
+        {
+            return "Lower";
+        }
+        else if (n < m)
+        {
+            return "Higher";
+        }
+        else
         {
             return "Matches";
         }
-        return "Does not match";
+
+
+
     }
 
-    private string CompareLeague(string a, string b)
+    private string Compare(string a, string b)
     {
-        if (a==b)
+        if (a == b)
         {
-            return "Matches";
+            return "green";
         }
-        return "Does not match";
+        return "grey";
     }
 }
