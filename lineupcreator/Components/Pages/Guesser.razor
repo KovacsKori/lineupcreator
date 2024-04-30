@@ -1,7 +1,7 @@
 ﻿@page "/guesser"
 @rendermode InteractiveServer
 @inject RandomPlayerService playerService
-
+@inject DialogService DialogService
 
 <style>
 
@@ -72,7 +72,7 @@
     }
 
 </style>
-
+<RadzenDialog />
 <div class="guess-container">
     @foreach (var guess in guessedPlayers)
     {
@@ -132,9 +132,25 @@
         <button @onclick="FetchRandomPlayer">Get Another Random Player</button>
     }
 
-    Win: @win
-    Lose: @lose
+    Win: @winCounter
+    Lose: @loseCounter
     Streak: @streak   
+    <!--<div class="rz-p-12 rz-text-align-center">
+        <RadzenButton Text="Alert dialog" ButtonStyle="ButtonStyle.Secondary"
+                      Click=@(args => DialogService.Alert("Some message!", "MyTitle", new AlertOptions() { OkButtonText = "Yes" })) />
+    </div>-->
+    @if (!IsDivClickable)
+    {
+        if (isWIn)
+        {
+            DialogService.Alert(@currentPlayer!.short_name, "You Won!", new AlertOptions() { OkButtonText = "Nice!" });
+        }
+        else
+        {
+            DialogService.Alert(@currentPlayer!.short_name+" was the answer", "You Lost!", new AlertOptions() { OkButtonText = "Okay :(" });
+        }                                     
+    }
+
 </div>
 
 
@@ -143,10 +159,11 @@
     private string guess = "";
     private string guessResult = "";
     private int guessCounter=0;
-    private int win=0;
-    private int lose = 0;
+    private int winCounter=0;
+    private int loseCounter = 0;
     private int streak = 0;
     private bool IsDivClickable = true;
+    private bool isWIn = false;
     private List<Player> filteredPlayers = new List<Player>();
 
 
@@ -186,8 +203,9 @@
                 result = "Correct guess!";
                 IsDivClickable = false;
                 guessCounter = 0;
-                win++;
+                winCounter++;
                 streak++;
+                isWIn = true;
             }
             else
             {
@@ -196,8 +214,10 @@
                 if (guessCounter==6)
                 {
                     IsDivClickable = false;
-                    lose++;
+                    loseCounter++;
                     streak=0;
+                    guessCounter = 0;
+                    isWIn = false;
                 }
             }
 
