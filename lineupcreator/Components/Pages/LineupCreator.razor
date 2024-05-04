@@ -325,8 +325,7 @@
         box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
         color: #FFFFFF;
         cursor: pointer;
-        display: inline-block;-
-        font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+        display: inline-block;
         height: 40px;
         line-height: 5px;
         outline: 0;
@@ -334,7 +333,6 @@
         padding: 0 20px;
         pointer-events: auto;
         position: relative;
-        text-align: center;
         touch-action: manipulation;
         user-select: none;
         -webkit-user-select: none;
@@ -347,6 +345,92 @@
         .redbutton:hover {
             background: #E10109;
         }
+
+    .bluebutton {
+        background-color: initial;
+        background-image: linear-gradient(-180deg,#0813B7,#4858D9);
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        height: 40px;
+        line-height: 5px;
+        outline: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        pointer-events: auto;
+        position: relative;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: top;
+        white-space: nowrap;
+        z-index: 9;
+        border: 0;
+    }
+
+        .bluebutton:hover {
+            background: #0813B7;
+        }
+    
+
+    .greenbutton {
+        background-color: initial;
+        background-image: linear-gradient(-180deg,#08DB00,#5DDB52);
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        height: 40px;
+        line-height: 5px;
+        outline: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        pointer-events: auto;
+        position: relative;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: top;
+        white-space: nowrap;
+        z-index: 9;
+        border: 0;
+    }
+
+        .greenbutton:hover {
+            background: #08DB00;
+        }
+
+    .greybutton {
+        background-color: initial;
+        background-image: linear-gradient(-180deg,grey,lightgrey);
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        height: 40px;
+        line-height: 5px;
+        outline: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        pointer-events: auto;
+        position: relative;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: top;
+        white-space: nowrap;
+        z-index: 9;
+        border: 0;
+    }
+
+        .greybutton:hover {
+            background: grey;
+        }
+
     .colorbuttons{
        position:absolute;
        bottom:5px;
@@ -1837,6 +1921,9 @@
 
 <div class="colorbuttons">
     <button class="redbutton" onclick="@ChangeBackgroundToRed"></button>
+    <button class="bluebutton" onclick="@ChangeBackgroundToBlue"></button>
+    <button class="greenbutton" onclick="@ChangeBackgroundToDefault"></button>
+    <button class="greybutton" onclick="@ChangeBackgroundToGrey"></button>
 </div>
 
 
@@ -1984,12 +2071,32 @@
 
     void ChangeBackgroundToRed()
     {
-        Console.WriteLine("szia");
         backgroundImageUrl = "redpitch.jpg";
         backgroudColor = "#74232A";
         alertColor = "#BD3944";
     }
 
+    void ChangeBackgroundToBlue()
+    {
+        backgroundImageUrl = "bluepitch.jpg";
+        backgroudColor = "#293D78";
+        alertColor = "#3955A8";
+    }
+
+    void ChangeBackgroundToDefault()
+    {
+        backgroundImageUrl = "pitch3.jpg";
+        backgroudColor = "#3E7426";
+        alertColor = "#549E34";    
+    
+    }
+    void ChangeBackgroundToGrey()
+    {
+        backgroundImageUrl = "greypitch.jpg";
+        backgroudColor = "#4A4A4A";
+        alertColor = "#696969";
+
+    }
 
     [Parameter]
     public Player?[] players { get; set; } = new Player?[positions.Length];
