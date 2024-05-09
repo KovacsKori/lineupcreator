@@ -36,22 +36,6 @@ public class FootballDbContext : DbContext
         modelBuilder.Entity<Player>().Property(p => p.passing).HasColumnType("float");
         modelBuilder.Entity<Player>().Property(p => p.dribbling).HasColumnType("float");
         modelBuilder.Entity<Player>().Property(p => p.defending).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.physic).HasColumnType("float"); ;
-        /* modelBuilder.Entity<Player>().Property(p => p.st);
-         modelBuilder.Entity<Player>().Property(p => p.lw).HasColumnType("float");
-         modelBuilder.Entity<Player>().Property(p => p.rw).HasColumnType("float");
-         modelBuilder.Entity<Player>().Property(p => p.cf).HasColumnType("float");
-         modelBuilder.Entity<Player>().Property(p => p.cam);
-         modelBuilder.Entity<Player>().Property(p => p.lm);
-         modelBuilder.Entity<Player>().Property(p => p.cm);
-         modelBuilder.Entity<Player>().Property(p => p.rm);
-         modelBuilder.Entity<Player>().Property(p => p.cdm);
-         modelBuilder.Entity<Player>().Property(p => p.lwb);
-         modelBuilder.Entity<Player>().Property(p => p.lb);
-         modelBuilder.Entity<Player>().Property(p => p.cb);
-         modelBuilder.Entity<Player>().Property(p => p.rb);
-         modelBuilder.Entity<Player>().Property(p => p.rwb);
-         modelBuilder.Entity<Player>().Property(p => p.gk);*/
-        // További konfigurációk...
+        modelBuilder.Entity<Player>().Property(p => p.physic).HasColumnType("float"); ;               
     }
 }
