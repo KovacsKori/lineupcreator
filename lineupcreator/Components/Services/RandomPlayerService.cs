@@ -29,7 +29,7 @@ namespace lineupcreator.Components.Services
         public List<Player> SearchPlayers(string searchText)
         {
             return _context.Players
-                .Where(p => p.long_name.ToLower().Contains(searchText.ToLower())).OrderByDescending(p=>p.overall)
+                .Where(p => p.long_name.ToLower().Contains(searchText.ToLower()) && p.overall > 78 && (p.league_name.Contains("Premier League") || p.league_name.Contains("Ligue 1") || p.league_name.Contains("Bundesliga") || p.league_name.Contains("Serie A") || p.league_name.Contains("Primera Division"))).OrderByDescending(p=>p.overall)
                 .Take(10) // Limit the number of search results
                 .ToList();
         }

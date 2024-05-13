@@ -9,8 +9,9 @@
 
 <style>
     body {
-        background-color: @backgroudColor;
+        background-color: @backgroundColor;
     }
+  
 
     .lineup-container {
         width: 50%;
@@ -161,8 +162,7 @@
         float: left;
         margin-left: 100px;
         margin-top: 5%;
-        background-color: @alertColor;
-        border-radius: 20%;
+        background-color: @backgroundColor;
         height: 600px;
         width: 300px;
         overflow-y: scroll;
@@ -187,7 +187,7 @@
     .table-container {
         display: inline-block;
         float: right;
-        margin: 10px 70px 70px;
+        margin: 70px 70px 70px;
         box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
     }
 
@@ -200,7 +200,8 @@
         width: 100%;
         max-width: 100%;
         white-space: nowrap;
-        background-color: white;
+        background-color: @alertColor;
+        color: white;
     }
 
         .fl-table td, .fl-table th {
@@ -210,23 +211,23 @@
 
 
         .fl-table td {
-            border-right: 1px solid #f8f8f8;
+            border-right: 1px solid @backgroundColor;
             font-size: 12px;
-        }
-
+        }     
+        
         .fl-table thead th {
             color: #ffffff;
-            background: #4FC3A1;
+            background: black;
         }
 
 
             .fl-table thead th:nth-child(odd) {
                 color: #ffffff;
-                background: #324960;
-            }
+                background: #242424;
+            }          
 
         .fl-table tr:nth-child(even) {
-            background: #F8F8F8;
+            background: @backgroundColor;
         }
 
     @@media (max-width: 767px) {
@@ -581,7 +582,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions[index]
                 </RadzenAlert>
             }
@@ -619,39 +620,39 @@
 
             @if (maxdef < 78)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is not secure defensively
                 </RadzenAlert>
             }
 
             @if (maxheight < 180)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     You don't have a tall player in midfield
                 </RadzenAlert>
             }
             @if (maxpace < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is pretty slow
                 </RadzenAlert>
             }
             @if (avgpassing < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really poor
                 </RadzenAlert>
             }
             else if (avgpassing > 83)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really good
                 </RadzenAlert>
             }
         }
         @if (players[1] != null && players[1].shooting < 78)
         {
-            <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+            <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                 @players[1].short_name has low shooting
             </RadzenAlert>
         }
@@ -660,12 +661,20 @@
     <div class="table-container">
 
 
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                <th>Pos</th>
+                <th>Name</th>
+                <th>OVR</th>
+                <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
-                int nulla = 0;
+                int nulla = 0;                
                 if (players[index] != null)
                 {
                     <tr>
@@ -691,10 +700,10 @@
                                 @nulla
                             }
                         </td>
-                    </tr>
+                    </tr>                   
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -835,7 +844,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions433A[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions433A[index]
                 </RadzenAlert>
             }
@@ -872,32 +881,32 @@
 
             @if (maxdef < 78)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is not secure defensively
                 </RadzenAlert>
             }
 
             @if (maxheight < 180)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     You don't have a tall player in midfield
                 </RadzenAlert>
             }
             @if (maxpace < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is pretty slow
                 </RadzenAlert>
             }
             @if (avgpassing < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really poor
                 </RadzenAlert>
             }
             else if (avgpassing > 83)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really good
                 </RadzenAlert>
             }
@@ -908,9 +917,16 @@
     <div class="table-container">
 
 
-        <table class="f1-table">
-
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -943,7 +959,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -1077,7 +1093,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions442[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions442[index]
                 </RadzenAlert>
             }
@@ -1114,32 +1130,32 @@
 
             @if (maxdef < 78)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is not secure defensively
                 </RadzenAlert>
             }
 
             @if (maxheight < 180)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     You don't have a tall player in midfield
                 </RadzenAlert>
             }
             @if (maxpace < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield is pretty slow
                 </RadzenAlert>
             }
             @if (avgpassing < 75)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really poor
                 </RadzenAlert>
             }
             else if (avgpassing > 83)
             {
-                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     Your midfield's passing is really good
                 </RadzenAlert>
             }
@@ -1148,10 +1164,16 @@
     </div>
     <!--table-->
     <div class="table-container">
-
-
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -1184,7 +1206,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -1324,7 +1346,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions352[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions352[index]
                 </RadzenAlert>
             }
@@ -1332,10 +1354,16 @@
     </div>
     <!--table-->
     <div class="table-container">
-
-
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -1368,7 +1396,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -1505,7 +1533,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions4231[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions4231[index]
                 </RadzenAlert>
             }
@@ -1513,10 +1541,16 @@
     </div>
     <!--table-->
     <div class="table-container">
-
-
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -1549,7 +1583,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -1684,7 +1718,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions541[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions541[index]
                 </RadzenAlert>
             }
@@ -1692,10 +1726,16 @@
     </div>
     <!--table-->
     <div class="table-container">
-
-
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -1728,7 +1768,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -1869,7 +1909,7 @@
             var index = i;
             @if (players[index] != null && !(players[index]!.player_positions.Contains(positions41212[index])))
             {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Darker" AllowClose="false">
                     @players[index]!.short_name is not a @positions41212[index]
                 </RadzenAlert>
             }
@@ -1879,8 +1919,16 @@
     <div class="table-container">
 
 
-        <table class="f1-table">
-
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>OVR</th>
+                    <th>CHM</th>
+                </tr>
+            </thead>
+            <tbody>
             @for (int i = 0; i <= positions.Length - 1; i++)
             {
                 var index = i;
@@ -1913,7 +1961,7 @@
                     </tr>
                 }
             }
-
+            </tbody>
         </table>
 
     </div>
@@ -2066,34 +2114,34 @@
     }
 
     string backgroundImageUrl = "pitch3.jpg";
-    string backgroudColor = "#3E7426";
+    string backgroundColor = "#3E7426";
     string alertColor = "#549E34";
 
     void ChangeBackgroundToRed()
     {
         backgroundImageUrl = "redpitch.jpg";
-        backgroudColor = "#74232A";
+        backgroundColor = "#74232A";
         alertColor = "#BD3944";
     }
 
     void ChangeBackgroundToBlue()
     {
         backgroundImageUrl = "bluepitch.jpg";
-        backgroudColor = "#293D78";
+        backgroundColor = "#293D78";
         alertColor = "#3955A8";
     }
 
     void ChangeBackgroundToDefault()
     {
         backgroundImageUrl = "pitch3.jpg";
-        backgroudColor = "#3E7426";
+        backgroundColor = "#3E7426";
         alertColor = "#549E34";    
     
     }
     void ChangeBackgroundToGrey()
     {
         backgroundImageUrl = "greypitch.jpg";
-        backgroudColor = "#4A4A4A";
+        backgroundColor = "#4A4A4A";
         alertColor = "#696969";
 
     }
