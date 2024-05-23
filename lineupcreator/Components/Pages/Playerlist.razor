@@ -18,10 +18,10 @@
     <RadzenDataFilter @ref="dataFilter" Auto=auto Data="@players" TItem="Player" ViewChanged=@(view => playersGrid.Reload())>
         <Properties>
             <RadzenDataFilterProperty TItem="Player" Property="short_name" Title="Name" />
-            <RadzenDataFilterProperty TItem="Player" Property="club_name" Title="Club" />          
+            <RadzenDataFilterProperty TItem="Player" Property="Club.club_name" Title="Club" />          
             <RadzenDataFilterProperty TItem="Player" Property="overall" Title="Overall" />
             <RadzenDataFilterProperty TItem="Player" Property="player_positions" Title="Positions" />
-            <RadzenDataFilterProperty TItem="Player" Property="nationality_name" Title="Nationality" />
+            <RadzenDataFilterProperty TItem="Player" Property="Nation.nationality_name" Title="Nationality" />
             <RadzenDataFilterProperty TItem="Player" Property="league_name" Title="League" />
             <RadzenDataFilterProperty TItem="Player" Property="height_cm" Title="Height" />
             <RadzenDataFilterProperty TItem="Player" Property="age" Title="Age" />
@@ -34,13 +34,13 @@
             <RadzenDataFilterProperty TItem="Player" Property="weak_foot" Title="Weak Foot" />
             <RadzenDataFilterProperty TItem="Player" Property="skill_moves" Title="Skill Moves" />
             <RadzenDataFilterProperty TItem="Player" Property="preferred_foot" Title="Preferred Foot" />
-            <RadzenDataFilterProperty TItem="Player" Property="nationality_name" Title="Nationality" />
+            <RadzenDataFilterProperty TItem="Player" Property="player_traits" Title="Traits" />
         </Properties>
     </RadzenDataFilter>
 
 
     <RadzenDataGrid @ref="playersGrid" AllowColumnResize="false" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                    Data="@(filteredPlayers)" TItem="Player" ColumnWidth="300px" Count = "@count" LoadData="@LoadData" IsLoading="@isLoading" >
+                    Data="@(filteredPlayers)" TItem="Player" ColumnWidth="300px" Count="@count" LoadData="@LoadData" IsLoading="@isLoading">
         <Columns>
             <RadzenDataGridColumn TItem="Player" Title="" Width="6px" Filterable="false">
                 <Template Context="data">
@@ -50,16 +50,16 @@
             <RadzenDataGridColumn TItem="Player" Property="short_name" Title="Name" Width="15px" />
             <RadzenDataGridColumn TItem="Player" Title="" Width="7px" Filterable="false">
                 <Template Context="data">
-                    <RadzenImage Path="@data.club_logo_url" class="rz-gravatar" AlternateText="@(data.club_name)" />
+                    <RadzenImage Path="@data.Club.club_logo_url" class="rz-gravatar" AlternateText="@(data.Club.club_name)" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Player" Property="club_name" Title="Club" Width="18px" />
+            <RadzenDataGridColumn TItem="Player" Property="Club.club_name" Title="Club" Width="18px" />
             <RadzenDataGridColumn TItem="Player" Title="" Width="6px" Filterable="false">
                 <Template Context="data">
-                    <RadzenImage Path="@data.nation_flag_url" AlternateText="@(data.club_name)" />
+                    <RadzenImage Path="@data.Nation.nation_flag_url" AlternateText="@(data.Nation.nationality_name)" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Player" Property="nationality_name" Title="Nation" Width="15px" />
+            <RadzenDataGridColumn TItem="Player" Property="Nation.nationality_name" Title="Nation" Width="15px" />
             <RadzenDataGridColumn TItem="Player" Property="age" Title="Age" Width="10px" />
             <RadzenDataGridColumn TItem="Player" Property="height_cm" Title="Height(cm)" Width="13px" />
             <RadzenDataGridColumn TItem="Player" Property="player_positions" Title="POS" Width="10px" />
@@ -101,7 +101,7 @@
         {
             await dataFilter.AddFilter(new CompositeFilterDescriptor()
                 {
-                    Property = "nationality_name",
+                    Property = "Nation.nationality_name",
                     FilterValue = "Hungary",
                     FilterOperator = FilterOperator.Contains
                 });
@@ -117,22 +117,21 @@
 
         await Task.Yield();
 
-        // This demo is using https://dynamic-linq.net
-        var query = DbContext.Players.AsQueryable();
+        var query = DbContext.Players
+            .AsNoTracking() // Disable lazy loading for this query
+            .Include(p => p.Club)
+            .Include(p => p.Nation)
+            .AsQueryable();
 
-        // Filter via the Where method
         query = query.Where(dataFilter);
 
         if (!string.IsNullOrEmpty(args.OrderBy))
         {
-            // Sort via the OrderBy method
             query = query.OrderBy(args.OrderBy);
         }
 
-        // Important!!! Make sure the Count property of RadzenDataGrid is set.
         count = query.Count();
 
-        // Perform paging via Skip and Take.
         filteredPlayers = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
 
         isLoading = false;

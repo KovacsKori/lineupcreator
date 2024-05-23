@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace lineupcreator.Components.Data
 {
     public class Player
     {
+        [Key]
         [Column("sofifa_id")]
-        public float sofifa_id { get; set; }
-
-        [Column("player_url")]
-        public string player_url { get; set; }
+        public int sofifa_id { get; set; }
 
         [Column("short_name")]
         public string short_name { get; set; }
@@ -18,43 +18,34 @@ namespace lineupcreator.Components.Data
         public string long_name { get; set; }
 
         [Column("overall")]
-        public float overall { get; set; }
+        public int overall { get; set; }
 
         [Column("player_positions")]
         public string player_positions { get; set; }
 
         [Column("age")]
-        public float age { get; set; }
+        public int age { get; set; }
 
         [Column("height_cm")]
-        public float height_cm { get; set; }
+        public int height_cm { get; set; }
 
         [Column("club_team_id")]
-        public float? club_team_id { get; set; }
-
-        [Column("club_name")]
-        public string? club_name { get; set; }
-
-        [Column("league_name")]
-        public string? league_name { get; set; }
+        public int? club_team_id { get; set; }
 
         [Column("club_jersey_number")]
-        public float? club_jersey_number { get; set; }
+        public int? club_jersey_number { get; set; }
 
         [Column("nationality_id")]
-        public float nationality_id { get; set; }
-
-        [Column("nationality_name")]
-        public string nationality_name { get; set; }
+        public int nationality_id { get; set; }
 
         [Column("preferred_foot")]
         public string preferred_foot { get; set; }
 
         [Column("weak_foot")]
-        public float weak_foot { get; set; }
+        public int weak_foot { get; set; }
 
         [Column("skill_moves")]
-        public float skill_moves { get; set; }
+        public int skill_moves { get; set; }
 
         [Column("work_rate")]
         public string work_rate { get; set; }
@@ -63,32 +54,32 @@ namespace lineupcreator.Components.Data
         public string? player_traits { get; set; }
 
         [Column("pace")]
-        public float? pace { get; set; }
+        public int? pace { get; set; }
 
         [Column("shooting")]
-        public float? shooting { get; set; }
+        public int? shooting { get; set; }
 
         [Column("passing")]
-        public float? passing { get; set; }
+        public int? passing { get; set; }
 
         [Column("dribbling")]
-        public float? dribbling { get; set; }
+        public int? dribbling { get; set; }
 
         [Column("defending")]
-        public float? defending { get; set; }
+        public int? defending { get; set; }
 
         [Column("physic")]
-        public float? physic { get; set; }
+        public int? physic { get; set; }
         
         [Column("player_face_url")]
         public string player_face_url { get; set; }
 
-        [Column("club_logo_url")]
-        public string? club_logo_url { get; set; }
+        [ForeignKey("club_team_id")]
+        public virtual Club Club { get; set; }
 
-        [Column("nation_flag_url")]
-        public string nation_flag_url { get; set; }        
+        [ForeignKey("nationality_id")]
+        public virtual Nation Nation { get; set; }
 
     }
 
-}
+} 

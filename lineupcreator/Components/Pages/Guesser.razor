@@ -1,7 +1,9 @@
 ﻿@page "/guesser"
+@using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject RandomPlayerService playerService
 @inject DialogService DialogService
+@inject FootballDbContext context
 
 <style>
 
@@ -85,14 +87,14 @@
                 <li style="background-color: @(ComparePositions(guess.GuessedPlayerObject.player_positions, currentPlayer.player_positions) == "Matches exactly" ? "green" : (ComparePositions(guess.GuessedPlayerObject.player_positions, currentPlayer.player_positions) == "Partially matches" ? "orange" : "grey"))">
                     @guess.GuessedPlayerObject.player_positions
                 </li>
-                <li style="background-color: @(Compare(guess.GuessedPlayerObject.nationality_name, currentPlayer.nationality_name) == "green" ? "green" : "grey")">
-                    @guess.GuessedPlayerObject.nationality_name
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.Nation.nationality_name, currentPlayer.Nation.nationality_name) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.Nation.nationality_name
                 </li>
-                <li style="background-color: @(Compare(guess.GuessedPlayerObject.club_name!, currentPlayer.club_name!) == "green" ? "green" : "grey")">
-                    @guess.GuessedPlayerObject.club_name
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.Club.club_name!, currentPlayer.Club.club_name!) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.Club.club_name
                 </li>
-                <li style="background-color: @(Compare(guess.GuessedPlayerObject.league_name!, currentPlayer.league_name!) == "green" ? "green" : "grey")">
-                    @guess.GuessedPlayerObject.league_name
+                <li style="background-color: @(Compare(guess.GuessedPlayerObject.Club.league_name!, currentPlayer.Club.league_name!) == "green" ? "green" : "grey")">
+                    @guess.GuessedPlayerObject.Club.league_name
                 </li>
                 <li style="background-color: @(CompareHigherLower(guess.GuessedPlayerObject.overall, currentPlayer.overall) == "Matches" ? "green" : "grey")">
                     @guess.GuessedPlayerObject.overall @if (CompareHigherLower(guess.GuessedPlayerObject.overall, currentPlayer.overall) != "Matches")
@@ -119,7 +121,7 @@
                 <div class="dropdown-content">
                     @foreach (var player in filteredPlayers)
                     {
-                        <div class="searched-players" @onclick="() => SelectPlayer(player)">@player.short_name <img class="logo " src="@player.club_logo_url"></div>
+                        <div class="searched-players" @onclick="() => SelectPlayer(player)">@player.short_name  <img class="logo " src="@player.Club.club_logo_url"></div>
                     }
                 </div>
             </div>
@@ -228,8 +230,6 @@
                     isWIn = false;
                 }
             }
-
-            // Add the guessed player along with the guess result to the list
             guessedPlayers.Add(new GuessedPlayer { GuessedName = guess, GuessedPlayerObject = selectedPlayer, Result = result });
         }
     }
@@ -243,23 +243,19 @@
     private void SelectPlayer(Player player)
     {
         guess = player.short_name;
-        CheckGuess(player); // Pass the selected player object to the CheckGuess method
+        CheckGuess(player);
     }
 
     private string ComparePositions(string guessedPlayerPositions, string currentPlayerPositions)
     {
-        // Prepare the position strings: split and trim spaces
         var splitGuessedPositions = guessedPlayerPositions.Split(',').Select(p => p.Trim()).ToList();
         var splitCurrentPositions = currentPlayerPositions.Split(',').Select(p => p.Trim()).ToList();
 
-        // Determine if there is an exact match
         bool exactMatch = splitGuessedPositions.Count == splitCurrentPositions.Count &&
                           splitGuessedPositions.All(splitCurrentPositions.Contains);
 
-        // Determine if there is at least one matching position
         bool partialMatch = splitGuessedPositions.Any(gp => splitCurrentPositions.Contains(gp));
 
-        // Return the result based on the matches found
         if (exactMatch)
             return "Matches exactly";
         else if (partialMatch)

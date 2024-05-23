@@ -1,0 +1,525 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using System.Net
+@using System.IO.Compression
+@using System.Data.SqlClient
+@using ChoETL
+@using System.Text
+@using System.Data
+@inject IConfiguration Configuration
+
+<PageTitle>UpdateDatabase</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<button onclick="@UpdateDatabase">Update Database</button>
+
+@code
+{
+    public class PlayerData
+    {
+        public int sofifa_id { get; set; }
+        public string short_name { get; set; }
+        public string long_name { get; set; }
+        public int overall { get; set; }
+        public string player_positions { get; set; }
+        public int age { get; set; }
+        public int height_cm { get; set; }
+        public int? club_team_id { get; set; }
+        public string? club_name { get; set; }
+        public string? league_name { get; set; }
+        public int? club_jersey_number { get; set; }
+        public int nationality_id { get; set; }
+        public string nationality_name { get; set; }
+        public string preferred_foot { get; set; }
+        public int weak_foot { get; set; }
+        public int skill_moves { get; set; }
+        public string work_rate { get; set; }
+        public string? player_traits { get; set; }
+        public int? pace { get; set; }
+        public int? shooting { get; set; }
+        public int? passing { get; set; }
+        public int? dribbling { get; set; }
+        public int? defending { get; set; }
+        public int? physic { get; set; }
+        public string player_face_url { get; set; }
+        public string? club_logo_url { get; set; }
+        public string nation_flag_url { get; set; }
+    }
+
+    void UpdateDatabase()
+    {
+        int rowCountUpdated = 0;
+        int totalRows = 0;
+        int processedRows = 0;
+
+        using (var client = new WebClient())
+        {
+            string url = "https://www.kaggle.com/api/v1/datasets/download/stefanoleone992/fifa-22-complete-player-dataset/players_22.csv";
+            string tempFilePath = Path.GetTempFileName();
+
+            //try
+            //{
+            Console.WriteLine("Starting database update...");
+
+            client.DownloadFile(url, tempFilePath);
+
+            Console.WriteLine("Downloading file...");
+            Console.WriteLine("Reading CSV file...");
+
+            using (var archive = ZipFile.OpenRead(tempFilePath))
+            {
+                var entry = archive.Entries.FirstOrDefault(e => e.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase));
+                if (entry != null)
+                {
+                    using (var stream = entry.Open())
+                    using (var sr = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        string connectionString = Configuration.GetConnectionString("Mydb")!;
+                        using (var csvReader = new ChoCSVReader(sr).WithFirstLineHeader())
+                        {
+                            var selectedColumns = csvReader
+                                .Select(r => new PlayerData
+                                    {
+                                        sofifa_id = ConvertToInt(r["sofifa_id"], "sofifa_id", r as Dictionary<string, object>),
+                                        short_name = ConvertToString(r["short_name"]),
+                                        long_name = ConvertToString(r["long_name"]),
+                                        player_positions = ConvertToString(r["player_positions"]),
+                                        overall = ConvertToInt(r["overall"], "overall", r as Dictionary<string, object>),
+                                        age = ConvertToInt(r["age"], "age", r as Dictionary<string, object>),
+                                        height_cm = ConvertToInt(r["height_cm"], "height_cm", r as Dictionary<string, object>),
+                                        club_team_id = ConvertToInt(r["club_team_id"], "club_team_id", r as Dictionary<string, object>),
+                                        club_name = ConvertToString(r["club_name"]),
+                                        league_name = ConvertToString(r["league_name"]),
+                                        club_jersey_number = ConvertToInt(r["club_jersey_number"], "club_jersey_number", r as Dictionary<string, object>) ?? 0,
+                                        nationality_id = ConvertToInt(r["nationality_id"], "nationality_id", r as Dictionary<string, object>),
+                                        nationality_name = ConvertToString(r["nationality_name"]),
+                                        preferred_foot = ConvertToString(r["preferred_foot"]),
+                                        weak_foot = ConvertToInt(r["weak_foot"], "weak_foot", r as Dictionary<string, object>),
+                                        skill_moves = ConvertToInt(r["skill_moves"], "skill_moves", r as Dictionary<string, object>),
+                                        work_rate = ConvertToString(r["work_rate"]),
+                                        player_traits = ConvertToString(r["player_traits"]),
+                                        pace = (int?)ConvertToInt(r["pace"], "pace", r as Dictionary<string, object>),
+                                        shooting = (int?)ConvertToInt(r["shooting"], "shooting", r as Dictionary<string, object>),
+                                        passing = (int?)ConvertToInt(r["passing"], "passing", r as Dictionary<string, object>),
+                                        dribbling = (int?)ConvertToInt(r["dribbling"], "dribbling", r as Dictionary<string, object>),
+                                        defending = (int?)ConvertToInt(r["defending"], "defending", r as Dictionary<string, object>),
+                                        physic = (int?)ConvertToInt(r["physic"], "physic", r as Dictionary<string, object>),
+                                        player_face_url = ConvertToString(r["player_face_url"]),
+                                        club_logo_url = ConvertToString(r["club_logo_url"]),
+                                        nation_flag_url = ConvertToString(r["nation_flag_url"])
+                                        // Map other properties similarly
+                                    })
+                                .ToList();
+
+                            totalRows = selectedColumns?.Count ?? 0;
+
+                            Console.WriteLine($"Selected {totalRows} rows from the CSV file.");
+
+                            if (selectedColumns != null && selectedColumns.Any())
+                            {
+                                using (var connection = new SqlConnection(connectionString))
+                                {
+                                    connection.Open();
+                                    Console.WriteLine("Updating Database...");
+
+                                    foreach (var item in selectedColumns)
+                                    {
+                                        bool rowExists = CheckClubRowExistsInDatabase(connection, item.club_team_id)!;
+
+                                        if (rowExists)
+                                        {
+                                            UpdateExistingClubRowInDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+                                        else
+                                        {
+                                            InsertClubRowIntoDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+                                    }
+
+                                    foreach (var item in selectedColumns)
+                                    {
+                                        bool rowExists = CheckNationRowExistsInDatabase(connection, item.nationality_id);
+
+                                        if (rowExists)
+                                        {
+                                            UpdateExistingNationRowInDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+                                        else
+                                        {
+                                            InsertNationRowIntoDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+                                    }
+
+                                    foreach (var item in selectedColumns)
+                                    {
+                                        processedRows++;
+                                        bool rowExists = CheckPlayerRowExistsInDatabase(connection, item.sofifa_id);
+
+                                        if (rowExists)
+                                        {
+                                            UpdateExistingPlayerRowInDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+                                        else
+                                        {
+                                            InsertPlayerRowIntoDatabase(connection, item);
+                                            rowCountUpdated++;
+                                        }
+
+                                        if (processedRows % 1000 == 0 || processedRows == totalRows)
+                                        {
+                                            Console.WriteLine($"Processed {processedRows} of {totalRows} rows...");
+                                        }
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("No data selected from the CSV file.");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("CSV file not found in the ZIP archive.");
+                }
+            }
+            Console.WriteLine($"Database update completed. {rowCountUpdated} rows updated.");
+            //   }
+            // catch (Exception ex)
+            // {
+            //     Console.WriteLine($"Error: {ex.Message}");
+            //  }
+            // finally
+            // {
+            //     File.Delete(tempFilePath);
+            // }
+        }
+    }
+
+    bool CheckPlayerRowExistsInDatabase(SqlConnection connection, int sofifaId)
+    {
+        using (var command = new SqlCommand($"SELECT COUNT(*) FROM player WHERE sofifa_id = @sofifaId", connection))
+        {
+            command.Parameters.AddWithValue("@sofifaId", sofifaId);
+            int count = (int)command.ExecuteScalar();
+            return count > 0;
+        }
+    }
+
+    bool CheckClubRowExistsInDatabase(SqlConnection connection, int? clubTeamId)
+    {
+        if (clubTeamId == null)
+        {
+            return false;
+        }
+        using (var command = new SqlCommand($"SELECT COUNT(*) FROM club WHERE club_team_id = @clubTeamId", connection))
+        {
+            command.Parameters.AddWithValue("clubTeamId", clubTeamId);
+            int count = (int)command.ExecuteScalar();
+            return count > 0;
+        }
+    }
+
+    bool CheckNationRowExistsInDatabase(SqlConnection connection, int nationalityId)
+    {
+        using (var command = new SqlCommand($"SELECT COUNT(*) FROM nationality WHERE nationality_id = @nationalityId", connection))
+        {
+            command.Parameters.AddWithValue("nationalityId", nationalityId);
+            int count = (int)command.ExecuteScalar();
+            return count > 0;
+        }
+    }
+
+    void UpdateExistingPlayerRowInDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+            using (var command = new SqlCommand(@"UPDATE player
+                                       SET short_name = @shortName,
+                                           long_name = @longName,
+                                           overall = @overall,
+                                           player_positions = @playerPositions,
+                                           age = @age,
+                                           height_cm = @heightCm,
+                                           club_team_id = @clubTeamId,
+                                           club_jersey_number = @clubJerseyNumber,
+                                           nationality_id = @nationalityId,
+                                           preferred_foot = @preferredFoot,
+                                           weak_foot = @weakFoot,
+                                           skill_moves = @skillMoves,
+                                           work_rate = @workRate,
+                                           player_traits = @playerTraits,
+                                           pace = @pace,
+                                           shooting = @shooting,
+                                           passing = @passing,
+                                           dribbling = @dribbling,
+                                           defending = @defending,
+                                           physic = @physic,
+                                           player_face_url = @playerFaceUrl
+                                       WHERE sofifa_id = @sofifaId", connection))
+            {
+                command.Parameters.AddWithValue("@shortName", newData.short_name);
+                command.Parameters.AddWithValue("@longName", newData.long_name);
+                command.Parameters.AddWithValue("@overall", newData.overall);
+                command.Parameters.AddWithValue("@playerPositions", newData.player_positions);
+                command.Parameters.AddWithValue("@age", newData.age);
+                command.Parameters.AddWithValue("@heightCm", newData.height_cm);
+                command.Parameters.AddWithValue("@clubTeamId", (object)newData.club_team_id ?? DBNull.Value);
+                command.Parameters.AddWithValue("@clubName", (object)newData.club_name ?? DBNull.Value);
+                command.Parameters.AddWithValue("@leagueName", (object)newData.league_name ?? DBNull.Value);
+                command.Parameters.AddWithValue("@clubJerseyNumber", (object)newData.club_jersey_number ?? DBNull.Value);
+                command.Parameters.AddWithValue("@nationalityId", (object)newData.nationality_id ?? DBNull.Value);
+                command.Parameters.AddWithValue("@nationalityName", newData.nationality_name);
+                command.Parameters.AddWithValue("@preferredFoot", newData.preferred_foot);
+                command.Parameters.AddWithValue("@weakFoot", newData.weak_foot);
+                command.Parameters.AddWithValue("@skillMoves", newData.skill_moves);
+                command.Parameters.AddWithValue("@workRate", newData.work_rate);
+                command.Parameters.AddWithValue("@playerTraits", (object)newData.player_traits ?? DBNull.Value);
+                command.Parameters.AddWithValue("@pace", (object)newData.pace ?? DBNull.Value);
+                command.Parameters.AddWithValue("@shooting", (object)newData.shooting ?? DBNull.Value);
+                command.Parameters.AddWithValue("@passing", (object)newData.passing ?? DBNull.Value);
+                command.Parameters.AddWithValue("@dribbling", (object)newData.dribbling ?? DBNull.Value);
+                command.Parameters.AddWithValue("@defending", (object)newData.defending ?? DBNull.Value);
+                command.Parameters.AddWithValue("@physic", (object)newData.physic ?? DBNull.Value);
+                command.Parameters.AddWithValue("@playerFaceUrl", newData.player_face_url);
+                command.Parameters.AddWithValue("@clubLogoUrl", (object)newData.club_logo_url ?? DBNull.Value);
+                command.Parameters.AddWithValue("@nationFlagUrl", (object)newData.nation_flag_url ?? DBNull.Value);
+                command.Parameters.AddWithValue("@sofifaId", newData.sofifa_id);
+
+                command.ExecuteNonQuery();
+
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating player with sofifa_id {newData.sofifa_id}: {ex.Message}");
+        }
+    }
+
+    void UpdateExistingClubRowInDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+
+            using (var clubCommand = new SqlCommand(@"UPDATE club
+                                       SET club_name = @clubName,
+                                           league_name = @leagueName,
+                                           club_logo_url = @clubLogoUrl
+                                       WHERE club_team_id = @clubTeamId", connection))
+            {
+                clubCommand.Parameters.AddWithValue("@clubTeamId", newData.club_team_id);
+                clubCommand.Parameters.AddWithValue("@clubName", newData.club_name);
+                clubCommand.Parameters.AddWithValue("@leagueName", newData.league_name);
+                clubCommand.Parameters.AddWithValue("@clubLogoUrl", newData.club_logo_url);
+
+                clubCommand.ExecuteNonQuery();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating club: {newData.club_name}: {ex.Message}");
+        }
+    }
+
+    void UpdateExistingNationRowInDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+            using (var nationCommand = new SqlCommand(@"UPDATE nationality
+                                       SET nationality_name = @nationalityName,
+                                           nation_flag_url = @nationFlagUrl
+                                       WHERE nationality_id = @nationalityId", connection))
+            {
+                nationCommand.Parameters.AddWithValue("@nationalityId", newData.nationality_id);
+                nationCommand.Parameters.AddWithValue("@nationalityName", newData.nationality_name);
+                nationCommand.Parameters.AddWithValue("@nationFlagUrl", newData.nation_flag_url);
+
+                nationCommand.ExecuteNonQuery();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating nation: {newData.nationality_name}: {ex.Message}");
+        }
+    }
+
+
+    void InsertPlayerRowIntoDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+            using (var command = new SqlCommand(@"INSERT INTO player
+                                       (sofifa_id, short_name, long_name, overall, player_positions, age, height_cm, club_team_id,
+                                        club_jersey_number, nationality_id,
+                                        preferred_foot, weak_foot, skill_moves, work_rate, player_traits, pace, shooting, passing, dribbling,
+                                        defending, physic, player_face_url)
+                                       VALUES (@sofifaId, @shortName, @longName, @overall, @playerPositions, @age, @heightCm, @clubTeamId, @clubJerseyNumber, @nationalityId,
+                                               @preferredFoot, @weakFoot, @skillMoves, @workRate, @playerTraits, @pace, @shooting, @passing, @dribbling,
+                                               @defending, @physic, @playerFaceUrl)", connection))
+            {
+
+                command.Parameters.AddWithValue("@sofifaId", newData.sofifa_id);
+                command.Parameters.AddWithValue("@shortName", newData.short_name);
+                command.Parameters.AddWithValue("@longName", newData.long_name);
+                command.Parameters.AddWithValue("@overall", newData.overall);
+                command.Parameters.AddWithValue("@playerPositions", newData.player_positions);
+                command.Parameters.AddWithValue("@age", newData.age);
+                command.Parameters.AddWithValue("@heightCm", newData.height_cm);
+                command.Parameters.AddWithValue("@clubTeamId", (object)newData.club_team_id ?? DBNull.Value);
+                command.Parameters.AddWithValue("@clubJerseyNumber", (object)newData.club_jersey_number ?? DBNull.Value);
+                command.Parameters.AddWithValue("@nationalityId", (object)newData.nationality_id ?? DBNull.Value);
+                command.Parameters.AddWithValue("@preferredFoot", newData.preferred_foot);
+                command.Parameters.AddWithValue("@weakFoot", newData.weak_foot);
+                command.Parameters.AddWithValue("@skillMoves", newData.skill_moves);
+                command.Parameters.AddWithValue("@workRate", newData.work_rate);
+                command.Parameters.AddWithValue("@playerTraits", (object)newData.player_traits ?? DBNull.Value);
+                command.Parameters.AddWithValue("@pace", (object)newData.pace ?? DBNull.Value);
+                command.Parameters.AddWithValue("@shooting", (object)newData.shooting ?? DBNull.Value);
+                command.Parameters.AddWithValue("@passing", (object)newData.passing ?? DBNull.Value);
+                command.Parameters.AddWithValue("@dribbling", (object)newData.dribbling ?? DBNull.Value);
+                command.Parameters.AddWithValue("@defending", (object)newData.defending ?? DBNull.Value);
+                command.Parameters.AddWithValue("@physic", (object)newData.physic ?? DBNull.Value);
+                command.Parameters.AddWithValue("@playerFaceUrl", newData.player_face_url);
+
+                command.ExecuteNonQuery();
+
+                
+            }
+
+
+            using (var nationCommand = new SqlCommand(@"INSERT INTO nationality
+                                       (nationality_id, nationality_name, nation_flag_url)
+                                       VALUES (@nationalityId, @nationalityName,@nationFlagUrl)", connection))
+            {
+                nationCommand.Parameters.AddWithValue("@nationalityId", newData.nationality_id);
+                nationCommand.Parameters.AddWithValue("@nationalityName", newData.nationality_name);
+                nationCommand.Parameters.AddWithValue("@nationFlagUrl", newData.nation_flag_url);
+
+                nationCommand.ExecuteNonQuery();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inserting nation: {newData.nationality_name}: {ex.Message}");
+        }
+    }
+
+    void InsertClubRowIntoDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+
+            using (var clubCommand = new SqlCommand(@"INSERT INTO club
+                                       (club_team_id, club_name, club_logo_url, league_name)
+                                       VALUES (@clubTeamId, @clubName, @clubLogoUrl, @leagueName)", connection))
+            {
+                clubCommand.Parameters.AddWithValue("@clubTeamId", newData.club_team_id);
+                clubCommand.Parameters.AddWithValue("@clubName", newData.club_name);
+                clubCommand.Parameters.AddWithValue("@clubLogoUrl", newData.club_logo_url);
+                clubCommand.Parameters.AddWithValue("@leagueName", newData.league_name);
+
+                clubCommand.ExecuteNonQuery();            
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inserting club: {newData.club_name}: {ex.Message}");
+        }
+    }
+
+    void InsertNationRowIntoDatabase(SqlConnection connection, PlayerData newData)
+    {
+        try
+        {
+
+            using (var nationCommand = new SqlCommand(@"INSERT INTO nationality
+                                       (nationality_id, nationality_name, nation_flag_url)
+                                       VALUES (@nationalityId, @nationalityName,@nationFlagUrl)", connection))
+            {
+                nationCommand.Parameters.AddWithValue("@nationalityId", newData.nationality_id);
+                nationCommand.Parameters.AddWithValue("@nationalityName", newData.nationality_name);
+                nationCommand.Parameters.AddWithValue("@nationFlagUrl", newData.nation_flag_url);
+
+                int rowsAffected = nationCommand.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine($"Insert completed for : {newData.nationality_name}");
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inserting nation {newData.nationality_name}: {ex.Message}");
+        }
+    }
+
+
+    int? ConvertToInt(object? value, string columnName, Dictionary<string, object>? row)
+    {
+        
+        if (columnName == "club_team_id" && (value is null || value is DBNull))
+        {
+            return 0;
+        }
+
+        if (value is null || value is DBNull)
+        {
+           // Console.WriteLine($"Value for column '{columnName}' is null or DBNull.");
+            return null;
+        }
+
+        try
+        {
+            // Try to parse the value directly as an integer
+            if (int.TryParse(value.ToString(), out int intValue))
+            {
+                return intValue;
+            }
+
+            // If parsing as integer fails, try parsing as double
+            if (double.TryParse(value.ToString(), out double doubleValue))
+            {
+                // If the double value is a whole number, convert to integer
+                if (doubleValue % 1 == 0)
+                {
+                    return (int)doubleValue;
+                }
+            }
+
+            // If parsing fails, log the error
+            string rowDetails = row != null
+                ? string.Join(",", row.Select(kv => $"{kv.Key}={kv.Value}"))
+                : "Row data is null";
+            Console.WriteLine($"Error converting value '{value}' from column '{columnName}' to int in row: {rowDetails}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            string rowDetails = row != null
+                ? string.Join(",", row.Select(kv => $"{kv.Key}={kv.Value}"))
+                : "Row data is null";
+            Console.WriteLine($"Error converting value '{value}' from column '{columnName}' to int in row: {rowDetails}: {ex.Message}");
+            return null;
+        }
+    }
+
+
+    string ConvertToString(string value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+}

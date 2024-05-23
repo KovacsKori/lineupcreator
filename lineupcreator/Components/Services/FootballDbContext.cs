@@ -1,6 +1,8 @@
 ﻿using lineupcreator.Components.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
+
 namespace lineupcreator.Components.Services;
 public class FootballDbContext : DbContext
 {
@@ -11,31 +13,33 @@ public class FootballDbContext : DbContext
         Configuration = configuration;
     }
     public DbSet<Player> Players { get; set; }
+    public DbSet<Club> Clubs { get; set; }
+    public DbSet<Nation> Nations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // Az adatbázis kapcsolat beállítása (pl. SQL Server)
-        //optionsBuilder.UseSqlServer("Data Source=DESKTOP-F4N9UQK;Initial Catalog=lineupcreator;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-        optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Mydb"));
-    }
+        {
+            // Az adatbázis kapcsolat beállítása (pl. SQL Server)
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlServer(Configuration.GetConnectionString("Mydb"));
+        }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Player>().ToTable("playerstable$").HasKey(p => p.sofifa_id);
-        modelBuilder.Entity<Player>().Property(p => p.sofifa_id).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.overall).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.age).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.height_cm).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.club_team_id).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.club_jersey_number).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.nationality_id).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.weak_foot).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.skill_moves).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.pace).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.shooting).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.passing).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.dribbling).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.defending).HasColumnType("float");
-        modelBuilder.Entity<Player>().Property(p => p.physic).HasColumnType("float"); ;               
+        modelBuilder.Entity<Player>().ToTable("player").HasKey(p => p.sofifa_id);
+        modelBuilder.Entity<Club>().ToTable("club").HasKey(c => c.club_team_id);
+        modelBuilder.Entity<Nation>().ToTable("nationality").HasKey(n => n.nationality_id);
+
+        modelBuilder.Entity<Player>()
+            .HasOne(p => p.Club)
+            .WithMany(c => c.Players)
+            .HasForeignKey(p => p.club_team_id)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Player>()
+            .HasOne(p => p.Nation)
+            .WithMany(n => n.Players)
+            .HasForeignKey(p => p.nationality_id)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
