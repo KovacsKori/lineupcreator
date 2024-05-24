@@ -1,0 +1,217 @@
+﻿@page "/transfer"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@inject FootballDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<h3>Transfer Player</h3>
+
+<style>
+
+    body {
+        font-family: 'Comic Sans MS';
+        font-size: 25px;
+        color:white;
+    }
+    .player-search-container {
+        display: inline-block;
+        float:left;
+        width: 300px;
+    }
+
+    .club-search-container {
+        display: inline-block;
+        float: left;
+        width: 300px;
+        margin-left:25px;
+    }
+
+    .transfer-container{
+        display: inline-block;
+        float: left;
+        margin-left: 25px;
+    }
+
+    .dropdown-content {
+        background-color: white;
+        border: solid 1px black;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        color:black;
+    }
+
+    .searched-players {
+        border: solid 1px black;
+    }
+
+        .searched-players:hover {
+            background-color: #69F06E;
+        }
+
+    .searched-clubs {
+        border: solid 1px black;
+    }
+
+        .searched-clubs:hover {
+            background-color: #69F06E;
+        }
+
+    input {
+        width: 300px;
+        font-size: 25px;
+    }
+
+    .logo {
+        width: 40px;
+        height 40px;
+    }
+</style>
+
+<div class="player-search-container">
+    <label for="playerSelect">Select Player:</label>
+    <div>
+        <input type="text" @bind="playerSearchTerm" @oninput="SearchPlayers" placeholder="Enter player name">
+        <div class="dropdown-content">
+            @if (filteredPlayers != null && filteredPlayers.Any())
+            {
+                @foreach (var player in filteredPlayers)
+                {
+                    <div class="searched-players" @onclick="() => SelectPlayer(player)">
+                        @player.short_name <img class="logo" src="@player.Club.club_logo_url">
+                    </div>
+                }
+            }           
+        </div>
+    </div>
+</div>
+
+<div class="club-search-container">
+    <label for="clubSelect">Select Club:</label>
+    <div>
+        <input type="text" @bind="clubSearchTerm" @oninput="SearchClubs" placeholder="Enter club name">
+        <div class="dropdown-content">
+            @if (filteredClubs != null && filteredClubs.Any())
+            {
+                @foreach (var club in filteredClubs)
+                {
+                    <div class="searched-clubs" @onclick="() => SelectClub(club)">
+                        @club.club_name <img class="logo" src="@club.club_logo_url">
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div class="transfer-container">
+@if (selectedPlayer != null)
+{
+    <div>
+        <h4>Selected Player: @(selectedPlayer.short_name)</h4>
+        <h4>Current Club: @(selectedPlayer.Club?.club_name ?? "No Club")</h4>
+        @if (selectedClub != null)
+        {
+            <h4>New Club: @selectedClub.club_name</h4>
+        }
+        else
+        {
+            <h4>New Club: No club selected</h4>
+        }
+        <button @onclick="TransferPlayer">Transfer</button>
+    </div>   
+}
+</div>
+
+@code {
+    private List<Player> players = new();
+    private List<Club> clubs = new();
+    private int? selectedPlayerId;
+    private Player? selectedPlayer;
+    private Club selectedClub;
+    private string playerSearchTerm = "";
+    private string clubSearchTerm = "";
+    private List<Player> filteredPlayers = new();
+    private List<Club> filteredClubs = new();
+
+    protected override void OnInitialized()
+    {
+        LoadPlayers();
+        LoadClubs();
+    }
+
+    private void LoadPlayers()
+    {
+        players = DbContext.Players.ToList();
+
+        // Explicitly load related Club entities
+        foreach (var player in players)
+        {
+            DbContext.Entry(player).Reference(p => p.Club).Load();
+        }
+
+        Console.WriteLine($"Loaded {players.Count} players.");
+    }
+
+    private void LoadClubs()
+    {
+        clubs = DbContext.Clubs.ToList();
+        Console.WriteLine($"Loaded {clubs.Count} clubs.");
+    }
+
+    private void SearchPlayers(ChangeEventArgs e)
+    {
+        playerSearchTerm = e.Value.ToString();
+        LoadFilteredPlayers();
+    }
+
+    private void SearchClubs(ChangeEventArgs e)
+    {
+        clubSearchTerm = e.Value.ToString();
+        LoadFilteredClubs();
+    }
+
+    private void LoadFilteredPlayers()
+    {
+        filteredPlayers = DbContext.Players
+            .Where(p => p.long_name.ToLower().Contains(playerSearchTerm.ToLower()))
+            .OrderByDescending(p => p.overall)
+            .Take(10)
+            .ToList();
+    }
+
+    private void LoadFilteredClubs()
+    {
+        filteredClubs = DbContext.Clubs
+            .Where(c => c.club_name.ToLower().Contains(clubSearchTerm.ToLower()))
+            .Take(10)
+            .ToList();
+    }
+
+    private void SelectPlayer(Player player)
+    {
+        selectedPlayerId = player.sofifa_id;
+        selectedPlayer = players.FirstOrDefault(p => p.sofifa_id == selectedPlayerId);
+    }
+
+    private void SelectClub(Club club)
+    {
+        selectedClub = club;
+    }
+
+    private void TransferPlayer()
+    {
+        if (selectedPlayer != null && selectedClub != null)
+        {
+            selectedPlayer.club_team_id = selectedClub.club_team_id;
+
+            try
+            {
+                DbContext.SaveChanges();
+                NavigationManager.NavigateTo("/transfer", true);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error saving changes: {ex.Message}");
+                Console.Error.WriteLine(ex.StackTrace);
+            }
+        }
+    }
+}
