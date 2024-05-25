@@ -178,7 +178,6 @@
 
 
 
-    // Define a class to store the guessed player along with the guess result
     private class GuessedPlayer
     {
         public string GuessedName { get; set; }
@@ -186,12 +185,11 @@
         public string Result { get; set; }
     }
 
-    // List to store the guess results
     private List<GuessedPlayer> guessedPlayers = new List<GuessedPlayer>();
 
     protected override void OnInitialized()
     {
-        FetchRandomPlayer(); // Fetch a random player when the component initializes
+        FetchRandomPlayer(); 
     }
 
     private void FetchRandomPlayer()
@@ -264,7 +262,7 @@
             return "Does not match";
     }
 
-    private string CompareHigherLower(float? n, float? m)
+    private string CompareHigherLower(int n, int m)
     {
         if (n > m)
         {
@@ -278,9 +276,6 @@
         {
             return "Matches";
         }
-
-
-
     }
 
     private string Compare(string a, string b)

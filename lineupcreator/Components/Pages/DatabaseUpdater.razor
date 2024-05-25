@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/databaseupdater"
 @rendermode InteractiveServer
 @using System.Net
 @using System.IO.Compression
@@ -10,9 +10,18 @@
 
 <PageTitle>UpdateDatabase</PageTitle>
 
-<h1>Hello, world!</h1>
-
 <button onclick="@UpdateDatabase">Update Database</button>
+
+
+
+@if (!isCompleted)
+{
+    <h2 style="color:white">After you started the database update, please wait until you get the message that it is completed.</h2>
+}
+else
+{
+    <h2 style="color:white">Database update is completed! </h2>
+}
 
 @code
 {
@@ -47,20 +56,20 @@
         public string nation_flag_url { get; set; }
     }
 
+    bool isCompleted = false;
     void UpdateDatabase()
     {
         int rowCountUpdated = 0;
         int totalRows = 0;
         int processedRows = 0;
-
+        isCompleted = false;
         using (var client = new WebClient())
         {
             string url = "https://www.kaggle.com/api/v1/datasets/download/stefanoleone992/fifa-22-complete-player-dataset/players_22.csv";
             string tempFilePath = Path.GetTempFileName();
 
-            //try
-            //{
             Console.WriteLine("Starting database update...");
+
 
             client.DownloadFile(url, tempFilePath);
 
@@ -108,7 +117,6 @@
                                         player_face_url = ConvertToString(r["player_face_url"]),
                                         club_logo_url = ConvertToString(r["club_logo_url"]),
                                         nation_flag_url = ConvertToString(r["nation_flag_url"])
-                                        // Map other properties similarly
                                     })
                                 .ToList();
 
@@ -192,16 +200,8 @@
                 }
             }
             Console.WriteLine($"Database update completed. {rowCountUpdated} rows updated.");
-            //   }
-            // catch (Exception ex)
-            // {
-            //     Console.WriteLine($"Error: {ex.Message}");
-            //  }
-            // finally
-            // {
-            //     File.Delete(tempFilePath);
-            // }
         }
+        isCompleted = true;
     }
 
     bool CheckPlayerRowExistsInDatabase(SqlConnection connection, int sofifaId)
@@ -394,7 +394,7 @@
 
                 command.ExecuteNonQuery();
 
-                
+
             }
 
 
@@ -430,7 +430,7 @@
                 clubCommand.Parameters.AddWithValue("@clubLogoUrl", newData.club_logo_url);
                 clubCommand.Parameters.AddWithValue("@leagueName", newData.league_name);
 
-                clubCommand.ExecuteNonQuery();            
+                clubCommand.ExecuteNonQuery();
             }
         }
         catch (Exception ex)
@@ -470,7 +470,7 @@
 
     int? ConvertToInt(object? value, string columnName, Dictionary<string, object>? row)
     {
-        
+
         if (columnName == "club_team_id" && (value is null || value is DBNull))
         {
             return 0;
@@ -478,29 +478,24 @@
 
         if (value is null || value is DBNull)
         {
-           // Console.WriteLine($"Value for column '{columnName}' is null or DBNull.");
             return null;
         }
 
         try
         {
-            // Try to parse the value directly as an integer
             if (int.TryParse(value.ToString(), out int intValue))
             {
                 return intValue;
             }
 
-            // If parsing as integer fails, try parsing as double
             if (double.TryParse(value.ToString(), out double doubleValue))
             {
-                // If the double value is a whole number, convert to integer
                 if (doubleValue % 1 == 0)
                 {
                     return (int)doubleValue;
                 }
             }
 
-            // If parsing fails, log the error
             string rowDetails = row != null
                 ? string.Join(",", row.Select(kv => $"{kv.Key}={kv.Value}"))
                 : "Row data is null";

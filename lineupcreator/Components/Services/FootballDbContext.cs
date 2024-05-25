@@ -18,7 +18,6 @@ public class FootballDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Az adatbázis kapcsolat beállítása (pl. SQL Server)
             optionsBuilder
                 .UseLazyLoadingProxies()
                 .UseSqlServer(Configuration.GetConnectionString("Mydb"));

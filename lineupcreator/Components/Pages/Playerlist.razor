@@ -118,7 +118,7 @@
         await Task.Yield();
 
         var query = DbContext.Players
-            .AsNoTracking() // Disable lazy loading for this query
+            .AsNoTracking()
             .Include(p => p.Club)
             .Include(p => p.Nation)
             .AsQueryable();

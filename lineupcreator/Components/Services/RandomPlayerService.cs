@@ -30,7 +30,7 @@ namespace lineupcreator.Components.Services
         {
             return _context.Players
                 .Where(p => p.long_name.ToLower().Contains(searchText.ToLower()) && p.overall > 78 && (p.Club.league_name.Contains("Premier League") || p.Club.league_name.Contains("Ligue 1") || p.Club.league_name.Contains("Bundesliga") || p.Club.league_name.Contains("Serie A") || p.Club.league_name.Contains("Primera Division"))).OrderByDescending(p=>p.overall)
-                .Take(10) // Limit the number of search results
+                .Take(10)
                 .ToList();
         }
     }
